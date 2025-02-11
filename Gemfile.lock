@@ -95,6 +95,10 @@ GEM
       railties (>= 4.1.0)
       responders
       warden (~> 1.2.3)
+    dotenv (2.8.1)
+    dotenv-rails (2.8.1)
+      dotenv (= 2.8.1)
+      railties (>= 3.2)
     erubi (1.13.1)
     ffi (1.17.1-x86_64-darwin)
     globalid (1.2.1)
@@ -263,6 +267,7 @@ DEPENDENCIES
   capybara (>= 3.26)
   carrierwave
   devise
+  dotenv-rails
   jbuilder (~> 2.7)
   listen (~> 3.3)
   pry-rails
