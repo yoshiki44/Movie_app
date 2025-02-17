@@ -6,6 +6,7 @@
       <p><%= image_tag 'https://image.tmdb.org/t/p/w200' + @movie['poster_path'],class: "card-size" %></p>
     <% end %>
     <p><%= @movie['overview'] %></p>
+    <p><%= @movie['runtime'] %></p>
     <%#= link_to "投稿ページへ", new_post_path(movie_id: @movie['id']) %>
   </div>
 <p>Find me in app/views/movies/show.html.erb</p>
