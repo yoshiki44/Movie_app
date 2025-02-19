@@ -45,40 +45,45 @@
     </header>
     <!-- Section-->
     <section class="py-5">
-      <% @movies.each do |movie| %>
-        <div class="container px-4 px-lg-5 mt-5">
-          <div class="row gx-4 gx-lg-5 row-cols-2 row-cols-md-3 row-cols-xl-4 justify-content-center">
+      <div class="container px-4 px-lg-5 mt-5">
+        <!-- 取得した映画を20件ずつ表示 -->
+        <div class="row gx-4 gx-lg-5 row-cols-1 row-cols-md-3 row-cols-xl-3 justify-content-center">
+          <% @movies.each do |movie| %>
             <div class="col mb-5">
               <div class="card h-100">
                 <!-- Product image -->
                 <% if movie['poster_path'] %>
-                  <p><%= image_tag 'https://image.tmdb.org/t/p/w200' + movie['poster_path'], class: "card-img" %></p>
+                  <%= image_tag "https://image.tmdb.org/t/p/w200#{movie['poster_path']}", class: "card-img-top" %>
                 <% end %>
 
-                <!-- Product details -->
                 <div class="card-body p-4">
                   <div class="text-center">
-                    <!-- Product name -->
+                    <!-- Movie title -->
                     <%= link_to movie_path(movie['id']) do %>
                       <p class="fw-bolder"><%= movie['title'] %></p>
                     <% end %>
-                    <!-- Product price -->
-                    <p><%= movie['runtime'] %></p>
+                    <p>公開日：<%= movie['release_date'] %></p>
+                    <p>評価：<%= movie['vote_average'] %></p>
                   </div>
                 </div>
-
-                <!-- Product actions -->
-                <div class="card-footer p-4 pt-0 border-top-0 bg-transparent">
-                  <div class="text-center">
-                    <p class="btn btn-outline-dark mt-auto"><%= link_to "詳細へ", movie_path(movie['id']) %></p>
-                  </div>
-                </div>
-
               </div>
             </div>
-          </div>
+          <% end %>
         </div>
-      <% end %>
+
+        <!-- ページネーション -->
+        <div class="d-flex justify-content-center mt-4">
+          <% if @current_page > 1 %>
+            <%= link_to "« 前へ", movies_path(page: @current_page - 1, looking_for: params[:looking_for]), class: "btn btn-outline-dark mx-2" %>
+          <% end %>
+
+          <span class="btn btn-dark mx-2">Page <%= @current_page %> / <%= @total_pages %></span>
+
+          <% if @current_page < @total_pages %>
+            <%= link_to "次へ »", movies_path(page: @current_page + 1, looking_for: params[:looking_for]), class: "btn btn-outline-dark mx-2" %>
+          <% end %>
+        </div>
+      </div>
     </section>
     <!-- Footer-->
     <footer class="py-5 bg-dark">
