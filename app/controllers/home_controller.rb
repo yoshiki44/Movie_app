@@ -2,10 +2,12 @@ class HomeController < ApplicationController
   require 'net/http'
   require 'json'
 
-  def index
+  def top
     api_key = ENV['TMDB_API']
     base_url = "https://api.themoviedb.org/3"
-    total_pages_to_fetch = 3
+    total_pages_to_fetch = 5
+    movies_per_page = 20  # 1ページあたりの映画数
+
 
     @current_page = (params[:page] || 1).to_i
 
@@ -15,26 +17,30 @@ class HomeController < ApplicationController
       search_url = "#{base_url}/movie/popular?api_key=#{api_key}&language=ja"
     end
 
-    @movies = []
+    all_movies = []  # すべての映画を格納する配列
 
+    # 5ページ分のデータを取得
     (1..total_pages_to_fetch).each do |page|
       url = "#{search_url}&page=#{page}"
-      puts "Fetching URL: #{url}"  # 確認用ログ
-
       response = Net::HTTP.get(URI.parse(url))
       parsed_response = JSON.parse(response) rescue {}
 
       if parsed_response["results"].present?
-        @movies += parsed_response["results"]
+        all_movies += parsed_response["results"]
       else
         break
       end
-
-      # `total_pages` の値を正しく更新
-      @total_pages = parsed_response["total_pages"] if @total_pages.nil? || parsed_response["total_pages"] > @total_pages
-
-      puts "Fetched #{@movies.count} movies so far."
-      puts "Total available pages: #{@total_pages}"
     end
+
+      # トータル映画数を保存
+      @total_movies = all_movies.count
+
+
+      # 1ページに表示する映画を取得
+      start_index = (@current_page - 1) * movies_per_page
+      @movies = all_movies[start_index, movies_per_page] || []
+
+      # トータルページ数を計算（100件を20件ずつに分ける）
+      @total_pages = (@total_movies.to_f / movies_per_page).ceil
   end
 end

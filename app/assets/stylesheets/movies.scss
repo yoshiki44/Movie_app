@@ -1,3 +1,45 @@
 // Place all the styles related to the movies controller here.
 // They will automatically be included in application.css.
 // You can use Sass (SCSS) here: https://sass-lang.com/
+
+.movie-detail {
+  max-width: 600px;
+  margin: 50px auto;
+  padding: 20px;
+  background: #fff;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+  text-align: center;
+}
+
+.movie-detail p {
+  font-size: 16px;
+  margin: 10px 0;
+  color: #333;
+}
+
+.movie-detail p:first-child {
+  font-size: 24px;
+  font-weight: bold;
+  color: #222;
+}
+
+.card-size {
+  width: 100%;
+  max-width: 300px;
+  height: auto;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  margin: 20px 0;
+}
+
+@media (max-width: 768px) {
+  .movie-detail {
+    max-width: 90%;
+    padding: 15px;
+  }
+
+  .movie-detail p {
+    font-size: 14px;
+  }
+}

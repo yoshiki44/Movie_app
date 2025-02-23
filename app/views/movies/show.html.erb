@@ -1,12 +1,9 @@
-<h1>Movies#show</h1>
-  <div class="movie-detail">
-    <p><%= @movie['title'] %></p>
-    <p><%= @movie['release_date'] %></p>
-    <% if @movie['poster_path'] %>
-      <p><%= image_tag 'https://image.tmdb.org/t/p/w200' + @movie['poster_path'],class: "card-size" %></p>
-    <% end %>
-    <p><%= @movie['overview'] %></p>
-    <p><%= @movie['runtime'] %></p>
-    <%#= link_to "投稿ページへ", new_post_path(movie_id: @movie['id']) %>
-  </div>
-<p>Find me in app/views/movies/show.html.erb</p>
+<div class="movie-detail">
+  <p><%= @movie['title'] %></p>
+  <p><%= @movie['release_date'] %></p>
+  <% if @movie['poster_path'] %>
+    <p><%= image_tag 'https://image.tmdb.org/t/p/w200' + @movie['poster_path'],class: "card-size" %></p>
+  <% end %>
+  <p><%= @movie['overview'] %></p>
+  <p>【上映時間：<%= @movie['runtime'] %>分】</p>
+</div>

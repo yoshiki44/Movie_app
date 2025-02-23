@@ -2,6 +2,11 @@ class MoviesController < ApplicationController
   require 'net/http'
   require 'json'
 
+  def fetch_json(url)
+    response = Net::HTTP.get(URI(url))
+    JSON.parse(response) rescue {}
+  end
+
   def index
     api_key = ENV['TMDB_API']
     base_url = "https://api.themoviedb.org/3"
