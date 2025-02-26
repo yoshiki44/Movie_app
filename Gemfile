@@ -7,6 +7,7 @@ gem 'devise'
 gem 'sprockets'
 gem 'carrierwave'
 
+
 # Bundle edge Rails instead: gem 'rails', github: 'rails/rails', branch: 'main'
 gem 'rails', '~> 6.1.7', '>= 6.1.7.7'
 # Use sqlite3 as the database for Active Record
@@ -63,3 +64,5 @@ gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
 gem 'themoviedb-api', '~> 1.3'
 gem 'dotenv-rails'
+gem 'devise-i18n'
+gem 'rails-i18n'
