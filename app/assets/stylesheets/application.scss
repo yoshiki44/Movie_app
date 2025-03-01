@@ -1,0 +1,182 @@
+/*
+ * This is a manifest file that'll be compiled into application.css, which will include all the files
+ * listed below.
+ *
+ * Any CSS and SCSS file within this directory, lib/assets/stylesheets, or any plugin's
+ * vendor/assets/stylesheets directory can be referenced here using a relative path.
+ *
+ * You're free to add application-wide styles to this file and they'll appear at the bottom of the
+ * compiled file so the styles you add here take precedence over styles defined in any other CSS/SCSS
+ * files in this directory. Styles in this file should be added after the last require_* statement.
+ * It is generally better to create a new file per style scope.
+ *
+ *= require_tree .
+ *= require_self
+ */
+
+ /* 映画サイト向けのスタイリング */
+
+ /* Navbar */
+ /* Navbar のデザイン */
+ .navbar {
+   background-color: #222;
+   border-bottom: 2px solid #c0392b;
+ }
+
+ /* Navbar リンクのデザイン */
+ .navbar-nav .nav-link {
+   color: white;
+   font-size: 16px;
+   font-weight: bold;
+   transition: color 0.3s ease;
+ }
+
+ .navbar-nav .nav-link:hover {
+   color: #c0392b;
+ }
+
+ /* Bootstrap 5 のドロップダウンメニュー */
+ .dropdown-menu {
+   background-color: #333;
+   border: 1px solid #c0392b;
+   box-shadow: 0px 10px 20px rgba(0, 0, 0, 0.5);
+   border-radius: 8px;
+   padding: 10px;
+   opacity: 0;
+   transform: translateY(-10px);
+   transition: opacity 0.3s ease, transform 0.3s ease;
+   visibility: hidden; /* 初期状態で隠す */
+ }
+
+ /* ドロップダウンが開いたとき */
+ .dropdown-menu.show {
+   opacity: 1;
+   transform: translateY(0);
+   visibility: visible;
+ }
+
+ /* ドロップダウンアイテム */
+ .dropdown-item {
+   color: white;
+   padding: 10px 20px;
+   font-size: 14px;
+ }
+
+ .dropdown-item:hover {
+   background-color: #c0392b;
+   color: white;
+ }
+
+ /* 🎥 ヘッダー */
+ header {
+   background: url('https://source.unsplash.com/1600x900/?cinema,movie') center/cover no-repeat;
+   text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
+ }
+
+ header h1 {
+   font-size: 3rem;
+   font-weight: bold;
+   letter-spacing: 2px;
+   color: gold;
+ }
+
+ header p {
+   font-size: 1.2rem;
+   color: #fff;
+ }
+
+ /* 🎞️ 検索フォーム */
+ .search {
+   background: #222;
+   padding: 20px;
+   border-radius: 10px;
+   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+   color: #fff;
+ }
+
+ .search label {
+   font-weight: bold;
+ }
+
+ .search input {
+   background: #444;
+   border: none;
+   color: white;
+   padding: 10px;
+   border-radius: 5px;
+ }
+
+ .search input:focus {
+   outline: 2px solid #c0392b;
+ }
+
+ .search button {
+   background: #c0392b;
+   color: white;
+   font-weight: bold;
+   padding: 10px 20px;
+   border-radius: 5px;
+   transition: background 0.3s ease-in-out;
+ }
+
+ .search button:hover {
+   background: #e74c3c;
+ }
+
+ /* 🍿 映画カード */
+ .movie-card {
+   background: #111;
+   color: white;
+   border-radius: 10px;
+   padding: 15px;
+   text-align: center;
+   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+ }
+
+ .movie-card img {
+   border-radius: 10px;
+   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.8);
+ }
+
+ .movie-card h3 {
+   margin-top: 10px;
+   font-size: 1.5rem;
+ }
+
+ .movie-card p {
+   color: #bbb;
+ }
+
+ .movie-card:hover {
+   transform: scale(1.05);
+   box-shadow: 0 6px 15px rgba(255, 0, 0, 0.5);
+ }
+
+ /* 🎬 ページネーション */
+ .pagination {
+   display: flex;
+   justify-content: center;
+   margin-top: 20px;
+ }
+
+ .pagination a {
+   color: white;
+   background: #c0392b;
+   padding: 10px 15px;
+   margin: 5px;
+   border-radius: 5px;
+   transition: background 0.3s ease-in-out;
+ }
+
+ .pagination a:hover {
+   background: #e74c3c;
+ }
+
+ /* 🎭 フッター */
+ footer {
+   background: #111;
+   padding: 20px;
+   text-align: center;
+   color: #bbb;
+   font-size: 0.9rem;
+ }

@@ -17,13 +17,6 @@
     <div class="container px-4 px-lg-5 mt-5">
       <div class="row gx-4 gx-lg-5 row-cols-1 row-cols-md-3 row-cols-xl-3 justify-content-center">
         <% if @movies.present? %>
-          <% if @movies.any? %>
-            <div class="">
-              <p>データ取得成功！件数: <%= @movies.size %></p>
-            </div>
-          <% else %>
-            <p>検索結果がありません。</p>
-          <% end %>
           <% @movies.each do |movie| %>
             <div class="col mb-5">
               <div class="card h-100">
@@ -54,24 +47,12 @@
               </div>
             </div>
           <% end %>
+          <!-- ページネーションを追加 -->
+          <%= paginate @movies %>
         <% else %>
           <p>検索結果がありません。</p>
-        <% end %>
-        <pre><%= @movies.to_json %></pre>
-      </div>
-      <!-- ページネーション -->
-      <div class="d-flex justify-content-center mt-4">
-        <% if @current_page.present? && @current_page > 1 %>
-          <%= link_to "« 前へ", movies_path(page: @current_page - 1, looking_for: params[:looking_for]), class: "btn btn-outline-dark mx-2" %>
-        <% end %>
-
-        <span class="btn btn-dark mx-2">Page <%= @current_page || 1 %> / <%= @total_pages || 1 %></span>
-
-        <% if @current_page.present? && @current_page < @total_pages %>
-          <%= link_to "次へ »", movies_path(page: @current_page + 1, looking_for: params[:looking_for]), class: "btn btn-outline-dark mx-2" %>
         <% end %>
       </div>
     </div>
   </section>
-
 </body>

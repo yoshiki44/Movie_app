@@ -28,7 +28,7 @@
               <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">アカウント設定</a>
               <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
                 <% if user_signed_in? %>
-                  <%= button_to "ログアウト", destroy_user_session_path, method: :delete, class: "nav-item" %>
+                  <%= button_to "ログアウト", destroy_user_session_path, method: :delete, class: "dropdown-item" %>
 
                   <% unless current_user.email == 'guest@example.com' %>
                     <li><%= link_to "パスワード変更", edit_user_password_path, class: "dropdown-item" %></li>
@@ -43,13 +43,6 @@
               </ul>
             </li>
           </ul>
-          <form class="d-flex">
-            <button class="btn btn-outline-dark" type="submit">
-              <i class="bi-cart-fill me-1"></i>
-              Cart
-              <span class="badge bg-dark text-white ms-1 rounded-pill">0</span>
-            </button>
-          </form>
         </div>
       </div>
     </nav>
@@ -57,8 +50,8 @@
     <header class="bg-dark py-5">
       <div class="container px-4 px-lg-5 my-5">
         <div class="text-center text-white">
-            <h1 class="display-4 fw-bolder">Shop in style</h1>
-            <p class="lead fw-normal text-white-50 mb-0">With this shop hompeage template</p>
+            <h1 class="display-4 fw-bolder">Runtime Movies</h1>
+            <p class="lead fw-normal text-white-50 mb-0">上映時間からお好みの映画を探そう</p>
         </div>
       </div>
     </header>
@@ -70,8 +63,9 @@
 
   <!-- Footer-->
   <footer class="py-5 bg-dark">
-    <div class="container"><p class="m-0 text-center text-white">Copyright &copy; Your Website 2023</p></div>
+    <div class="container"><p class="m-0 text-center text-white">Copyright &copy; Your Website 2025</p></div>
   </footer>
+
   <!-- Bootstrap core JS-->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
   <!-- Core theme JS-->

@@ -37,27 +37,35 @@ class MoviesController < ApplicationController
       end
     end
 
-      # 1ページに表示する映画を取得
-      start_index = (@current_page - 1) * movies_per_page
+    filtered_movies = []
 
-      if params[:min_runtime].present? && params[:max_runtime].present?
-        min_runtime = params[:min_runtime].to_i
-        max_runtime = params[:max_runtime].to_i
+    if params[:min_runtime].present? && params[:max_runtime].present?
+      min_runtime = params[:min_runtime].to_i
+      max_runtime = params[:max_runtime].to_i
 
-        # TMDb API で各映画の詳細情報を取得し、runtime をフィルタリング
-        @movies = all_movies.filter do |movie|
-          details_url = "#{base_url}/movie/#{movie["id"]}?api_key=#{api_key}&language=ja"
-          details = fetch_json(details_url)
+      all_movies.each do |movie|
+        details_url = "#{base_url}/movie/#{movie["id"]}?api_key=#{api_key}&language=ja"
+        details = fetch_json(details_url)
+
+        # `details` が nil でないことを確認
+        if details && details["runtime"]
           runtime = details["runtime"].to_i
 
-          runtime >= min_runtime && runtime <= max_runtime
+          # 指定範囲の映画のみ追加
+          if runtime >= min_runtime && runtime <= max_runtime
+            filtered_movies << movie
+          end
         end
-      else
-        @movies = all_movies.first(movies_per_page) || []
       end
+    else
+      filtered_movies = all_movies
+    end
 
-      # トータルページ数を計算（100件を20件ずつに分ける）
-      @total_pages = (@total_movies.to_f / movies_per_page).ceil
+      #`filtered_movies` が `nil` の場合は `[]` にする
+      filtered_movies ||= []
+
+      #`kaminari` でページネーション
+      @movies = Kaminari.paginate_array(filtered_movies).page(params[:page]).per(20)
   end
 
   def show
