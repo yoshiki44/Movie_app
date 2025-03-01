@@ -37,13 +37,24 @@ class MoviesController < ApplicationController
       end
     end
 
-      # トータル映画数を保存
-      @total_movies = all_movies.count
-
-
       # 1ページに表示する映画を取得
       start_index = (@current_page - 1) * movies_per_page
-      @movies = all_movies[start_index, movies_per_page] || []
+
+      if params[:min_runtime].present? && params[:max_runtime].present?
+        min_runtime = params[:min_runtime].to_i
+        max_runtime = params[:max_runtime].to_i
+
+        # TMDb API で各映画の詳細情報を取得し、runtime をフィルタリング
+        @movies = all_movies.filter do |movie|
+          details_url = "#{base_url}/movie/#{movie["id"]}?api_key=#{api_key}&language=ja"
+          details = fetch_json(details_url)
+          runtime = details["runtime"].to_i
+
+          runtime >= min_runtime && runtime <= max_runtime
+        end
+      else
+        @movies = all_movies.first(movies_per_page) || []
+      end
 
       # トータルページ数を計算（100件を20件ずつに分ける）
       @total_pages = (@total_movies.to_f / movies_per_page).ceil
@@ -54,5 +65,9 @@ class MoviesController < ApplicationController
     movie_id = params[:id]
     url = "https://api.themoviedb.org/3/movie/#{movie_id}?api_key=#{api_key}&language=ja"
     @movie = fetch_json(url) || {}  # 取得できなかった場合は空のハッシュ
+  end
+
+  def search
+    redirect_to movies_path(min_runtime: params[:min_runtime], max_runtime: params[:max_runtime])
   end
 end
