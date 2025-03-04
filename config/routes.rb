@@ -10,5 +10,7 @@ Rails.application.routes.draw do
   root 'movies#index'
   get 'movies/search', to: 'movies#search', as: 'search_movies'
   # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
-  resources :favorites, only: [:create, :destroy]
+  resources :movies, only: [:index, :show] do
+    resources :favorites, only: [:create, :destroy]
+  end
 end

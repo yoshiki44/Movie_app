@@ -15,12 +15,19 @@
  */
 
  /* 映画サイト向けのスタイリング */
-
- /* Navbar */
- /* Navbar のデザイン */
  .navbar {
    background-color: #222;
    border-bottom: 2px solid #c0392b;
+ }
+
+ .navbar-nav {
+   display: flex;
+   align-items: center;
+   gap: 20px; /* メニュー間の余白 */
+ }
+
+ .navbar-collapse {
+   justify-content: space-between;
  }
 
  /* Navbar リンクのデザイン */
@@ -46,6 +53,7 @@
    transform: translateY(-10px);
    transition: opacity 0.3s ease, transform 0.3s ease;
    visibility: hidden; /* 初期状態で隠す */
+   position: absolute;
  }
 
  /* ドロップダウンが開いたとき */
@@ -55,17 +63,24 @@
    visibility: visible;
  }
 
- /* ドロップダウンアイテム */
- .dropdown-item {
-   color: white;
-   padding: 10px 20px;
-   font-size: 14px;
- }
+ /* button_to を link_to の見た目に統一 */
+.dropdown-item {
+  all: unset; /* デフォルトのボタンのスタイルをリセット */
+  display: block;
+  width: 100%;
+  color: white;
+  font-size: 14px;
+  padding: 10px 20px;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.3s ease, color 0.3s ease;
+}
 
- .dropdown-item:hover {
-   background-color: #c0392b;
-   color: white;
- }
+/* ホバー時のスタイル */
+.dropdown-item:hover {
+  background-color: #c0392b;
+  color: white;
+}
 
  /* 🎥 ヘッダー */
  header {
