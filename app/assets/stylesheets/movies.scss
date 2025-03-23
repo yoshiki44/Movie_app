@@ -37,7 +37,7 @@ body {
 }
 
 .search input {
-  background: #222;
+  background: #444;
   border: 2px solid #c0392b;
   color: white;
   padding: 10px;
@@ -63,6 +63,16 @@ body {
 
 .search button:hover {
   background: #e74c3c;
+}
+
+.search-form .form-group {
+ margin-bottom: 10px; /* 各フォーム項目の間隔 */
+ display: block;
+}
+
+.search-form .btn {
+ width: 100%; /* ボタンをフォーム幅いっぱいに */
+ max-width: 50px; /* 必要に応じてボタン幅を制限 */
 }
 
 .row {
@@ -107,29 +117,6 @@ body {
   .row .col:nth-child(n+6) {
     display: none;
   }
-}
-
-/* 🎬 映画カードデザイン */
-.card {
-  background: #222;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 6px 15px rgba(255, 0, 0, 0.3);
-  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-  text-align: center;
-}
-
-.card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 8px 20px rgba(255, 0, 0, 0.6);
-}
-
-/* 🎞️ 画像調整 */
-.card img {
-  width: 100%;
-  height: auto;
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
 }
 
 /* 📌 ページネーション中央配置 */

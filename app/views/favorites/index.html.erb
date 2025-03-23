@@ -1,0 +1,33 @@
+<% if @favorites.any? %>
+  <div class="row">
+    <% @favorites.each do |favorite| %>
+      <% movie = get_movie_from_api(favorite.movie_id) %>
+      <% if movie.present? %>
+        <div class="col mb-5">
+          <div class="card h-100">
+            <% if movie['poster_path'] %>
+              <%= image_tag "https://image.tmdb.org/t/p/w200#{movie['poster_path']}", class: "card-img-top" %>
+            <% end %>
+            <div class="card-body p-4">
+              <div class="text-center">
+                <!-- Movie title -->
+                <%= link_to movie_path(movie['id']) do %>
+                  <p class="fw-bolder"><%= movie['title'] %></p>
+                <% end %>
+                <p>公開日：<%= movie['release_date'] %></p>
+                <p>評価：<%= movie['vote_average'] %></p>
+              </div>
+            </div>
+
+            <!-- 修正: favorite.id を渡す -->
+            <%= button_to "お気に入り解除", favorite_path(favorite.id), method: :delete, class: "btn btn-danger" %>
+          </div>
+        </div>
+      <% else %>
+        <p>映画情報が取得できませんでした。</p>
+      <% end %>
+    <% end %>
+  </div>
+<% else %>
+  <p>お気に入りに登録した映画はありません。</p>
+<% end %>
