@@ -10,7 +10,7 @@ class MoviesController < ApplicationController
   def index
     api_key = ENV['TMDB_API']
     base_url = "https://api.themoviedb.org/3"
-    total_pages_to_fetch = 5
+    total_pages_to_fetch = 20
     movies_per_page = 20  # 1ページあたりの映画数
 
 
