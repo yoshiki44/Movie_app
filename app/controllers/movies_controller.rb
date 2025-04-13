@@ -61,11 +61,15 @@ class MoviesController < ApplicationController
       filtered_movies = all_movies
     end
 
-      #`filtered_movies` が `nil` の場合は `[]` にする
-      filtered_movies ||= []
+    genres_url = "#{base_url}/genre/movie/list?api_key=#{api_key}&language=ja"
+    genre_response = fetch_json(genres_url)
+    @genres = genre_response["genres"]&.map { |g| [g["id"], g["name"]] }&.to_h || {}
 
-      #`kaminari` でページネーション
-      @movies = Kaminari.paginate_array(filtered_movies).page(params[:page]).per(20)
+    #`filtered_movies` が `nil` の場合は `[]` にする
+    filtered_movies ||= []
+
+    #`kaminari` でページネーション
+    @movies = Kaminari.paginate_array(filtered_movies).page(params[:page]).per(20)
   end
 
   def show

@@ -37,8 +37,14 @@
                     <%= link_to movie_path(movie['id']) do %>
                       <p class="fw-bolder"><%= movie['title'] %></p>
                     <% end %>
+
+                    <!-- 🔥 ジャンル表示 -->
+                    <% if movie['genre_ids'] && @genres %>
+                      <p>ジャンル：<%= movie['genre_ids'].map { |id| @genres[id] }.compact.join(', ') %></p>
+                    <% end %>
+
                     <p>公開日：<%= movie['release_date'] %></p>
-                    <p>評価：<%= movie['vote_average'] %></p>
+
                     <% if user_signed_in? %>
                       <% favorite = current_user.favorites.find_by(movie_id: movie['id']) %>
                       <% if favorite %>

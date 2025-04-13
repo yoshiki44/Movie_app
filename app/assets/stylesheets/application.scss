@@ -23,11 +23,12 @@
  .navbar-nav {
    display: flex;
    align-items: center;
-   gap: 20px; /* メニュー間の余白 */
+   gap: 20px;
+   margin-left: auto; // 🔥 右寄せにする
  }
 
  .navbar-collapse {
-   justify-content: space-between;
+   display: flex;
  }
 
  /* Navbar リンクのデザイン */
@@ -88,16 +89,24 @@
    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
  }
 
- header h1 {
-   font-size: 3rem;
-   font-weight: bold;
-   letter-spacing: 2px;
-   color: gold;
+ .header-title {
+   display: flex;
+   align-items: center; // 縦位置を揃える
+   justify-content: center; // 中央寄せ
+   gap: 20px; // タイトルとサブタイトルの間に余白
+   flex-wrap: wrap; // レスポンシブ対応（小さい画面で折り返し）
  }
 
- header p {
+ .header-title h1 {
+   font-size: 2.5rem;
+   color: gold;
+   margin: 0;
+ }
+
+ .header-title p {
    font-size: 1.2rem;
    color: #fff;
+   margin: 0;
  }
 
   /* 🍿 映画カード */
