@@ -30,7 +30,7 @@
       <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
         <div class="container px-4 px-lg-5">
           <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0 ms-lg-4">
+            <ul class="navbar-nav ms-auto mb-2 mb-lg-0 ms-lg-4">
               <li class="nav-item">
                 <%= link_to "Home", root_path, class: "nav-link active", 'aria-current': :'page' %>
               </li>
@@ -40,10 +40,9 @@
               <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button"
                   data-bs-toggle="dropdown" aria-expanded="false">アカウント設定</a>
-                <ul class="dropdown-menu" aria-labelledby="navbarDropdown">
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                   <% if user_signed_in? %>
                     <%= button_to "ログアウト", destroy_user_session_path, method: :delete, class: "dropdown-item" %>
-
                     <% unless current_user.email == 'guest@example.com' %>
                       <li><%= link_to "パスワード変更", edit_user_password_path, class: "dropdown-item" %></li>
                       <li><%= link_to "アカウント設定", edit_user_registration_path, class: "dropdown-item" %></li>

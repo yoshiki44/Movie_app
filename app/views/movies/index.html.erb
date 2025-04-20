@@ -5,12 +5,14 @@
 
     <%= form_with url: movies_path, method: :get, local: true, class: "search-form" do |f| %>
       <div class="form-group">
-        <label>最小上映時間（分）:</label>
+        <label>最小上映時間（分）</label>
         <%= f.number_field :min_runtime, value: params[:min_runtime], min: 30, max: 300, step: 5, class: "form-control" %>
       </div>
 
+      <p class="form-group">〜</p>
+
       <div class="form-group">
-        <label>最大上映時間（分）:</label>
+        <label>最大上映時間（分）</label>
         <%= f.number_field :max_runtime, value: params[:max_runtime], min: 30, max: 300, step: 5, class: "form-control" %>
       </div>
 
