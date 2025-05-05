@@ -306,7 +306,6 @@ Devise.setup do |config|
   config.responder.redirect_status = :see_other
   config.sign_out_via = :delete
 
-
   # ==> Configuration for :registerable
 
   # When set to false, does not sign a user in automatically after their password is

@@ -1,0 +1,8 @@
+ja:
+  notices:
+    guest_login: "ゲストユーザーとしてログインしました。"
+    guest_logout: "ゲストユーザーはログアウトしました。"
+    add_to_favorites: "お気に入りに追加しました！"
+    remove_from_favorites: "お気に入り解除しました。"
+  alert:
+    guest_change: "ゲストユーザーのため変更できません"

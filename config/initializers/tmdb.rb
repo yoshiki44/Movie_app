@@ -1,1 +1,3 @@
-Tmdb::Api.key(ENV['TMDB_API'])
+# frozen_string_literal: true
+
+Tmdb::Api.key(ENV.fetch('TMDB_API', nil))
