@@ -7,11 +7,23 @@ AllCops:
   NewCops: enable
   TargetRubyVersion: 3.2.0 # ← プロジェクトの Ruby バージョンに合わせて！
 
+Rails/I18nLocaleTexts:
+  Enabled: true
+
+Rails/UniqueValidationWithoutIndex:
+  Enabled: true
+
 Layout/LineLength:
-  Max: 120
+  Max: 140
 
 Style/Documentation:
   Enabled: false
+
+Metrics/MethodLength:
+  Max: 30
+
+Metrics/AbcSize:
+  Max: 40
 
 Metrics/BlockLength:
   Exclude:

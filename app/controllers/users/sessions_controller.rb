@@ -2,7 +2,6 @@
 
 module Users
   class SessionsController < Devise::SessionsController
-    before_action :check_guest_user, only: [:update]
 
     def check_guest_user
       return unless current_user&.guest_user?

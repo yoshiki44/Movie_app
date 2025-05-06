@@ -12,11 +12,11 @@ class HomeController < ApplicationController
 
     @current_page = (params[:page] || 1).to_i
 
-    if params[:looking_for].present?
-      search_url = "#{base_url}/search/movie?api_key=#{api_key}&language=ja&query=#{URI.encode_www_form_component(params[:looking_for])}"
-    else
-      search_url = "#{base_url}/movie/popular?api_key=#{api_key}&language=ja"
-    end
+    search_url = if params[:looking_for].present?
+                   "#{base_url}/search/movie?api_key=#{api_key}&language=ja&query=#{URI.encode_www_form_component(params[:looking_for])}"
+                 else
+                   "#{base_url}/movie/popular?api_key=#{api_key}&language=ja"
+                 end
 
     all_movies = [] # すべての映画を格納する配列
 

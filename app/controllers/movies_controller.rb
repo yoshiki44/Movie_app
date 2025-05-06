@@ -4,76 +4,81 @@ class MoviesController < ApplicationController
   require 'net/http'
   require 'json'
 
-  def fetch_json(url)
-    response = Net::HTTP.get(URI(url))
-    begin
-      JSON.parse(response)
-    rescue StandardError
-      {}
-    end
-  end
-
   def index
     api_key = ENV.fetch('TMDB_API', nil)
     base_url = 'https://api.themoviedb.org/3'
-    total_pages_to_fetch = 20 # 1ページあたりの映画数
+    total_pages_to_fetch = 20
 
     @current_page = (params[:page] || 1).to_i
 
+    search_url = build_search_url(base_url, api_key)
+    all_movies = fetch_movies(search_url, total_pages_to_fetch)
+
+    filtered_movies = if params[:min_runtime].present? && params[:max_runtime].present?
+                        filter_movies_by_runtime(all_movies, base_url, api_key)
+                      else
+                        all_movies
+                      end
+
+    @genres = fetch_genres(base_url, api_key)
+    @movies = Kaminari.paginate_array(filtered_movies).page(params[:page]).per(20)
+  end
+
+  private
+
+  def build_search_url(base_url, api_key)
     if params[:looking_for].present?
-      search_url = "#{base_url}/search/movie?api_key=#{api_key}&language=ja&query=#{URI.encode_www_form_component(params[:looking_for])}"
+      "#{base_url}/search/movie?api_key=#{api_key}&language=ja&query=#{URI.encode_www_form_component(params[:looking_for])}"
     else
-      search_url = "#{base_url}/movie/popular?api_key=#{api_key}&language=ja"
+      "#{base_url}/movie/popular?api_key=#{api_key}&language=ja"
     end
+  end
 
-    all_movies = [] # すべての映画を格納する配列
+  def fetch_movies(base_url, total_pages)
+    all_movies = []
 
-    # 5ページ分のデータを取得
-    (1..total_pages_to_fetch).each do |page|
-      url = "#{search_url}&page=#{page}"
+    (1..total_pages).each do |page|
+      url = "#{base_url}&page=#{page}"
       response = Net::HTTP.get(URI.parse(url))
-      parsed_response = begin
+      parsed = begin
         JSON.parse(response)
       rescue StandardError
         {}
       end
 
-      break if parsed_response['results'].blank?
+      break if parsed['results'].blank?
 
-      all_movies += parsed_response['results']
+      all_movies += parsed['results']
     end
 
-    filtered_movies = []
+    all_movies
+  end
 
-    if params[:min_runtime].present? && params[:max_runtime].present?
-      min_runtime = params[:min_runtime].to_i
-      max_runtime = params[:max_runtime].to_i
+  def filter_movies_by_runtime(movies, base_url, api_key)
+    min_runtime = params[:min_runtime].to_i
+    max_runtime = params[:max_runtime].to_i
 
-      all_movies.each do |movie|
-        details_url = "#{base_url}/movie/#{movie['id']}?api_key=#{api_key}&language=ja"
-        details = fetch_json(details_url)
+    movies.select do |movie|
+      details_url = "#{base_url}/movie/#{movie['id']}?api_key=#{api_key}&language=ja"
+      details = fetch_json(details_url)
 
-        # `details` が nil でないことを確認
-        next unless details && details['runtime']
-
-        runtime = details['runtime'].to_i
-
-        # 指定範囲の映画のみ追加
-        filtered_movies << movie if runtime.between?(min_runtime, max_runtime)
-      end
-    else
-      filtered_movies = all_movies
+      details && details['runtime'].to_i.between?(min_runtime, max_runtime)
     end
+  end
 
-    genres_url = "#{base_url}/genre/movie/list?api_key=#{api_key}&language=ja"
-    genre_response = fetch_json(genres_url)
-    @genres = genre_response['genres'].to_h { |g| [g['id'], g['name']] }
+  def fetch_genres(base_url, api_key)
+    url = "#{base_url}/genre/movie/list?api_key=#{api_key}&language=ja"
+    response = fetch_json(url)
+    response['genres'].to_h { |g| [g['id'], g['name']] }
+  end
 
-    # `filtered_movies` が `nil` の場合は `[]` にする
-    filtered_movies ||= []
-
-    # `kaminari` でページネーション
-    @movies = Kaminari.paginate_array(filtered_movies).page(params[:page]).per(20)
+  def fetch_json(url)
+    response = Net::HTTP.get(URI.parse(url))
+    begin
+      JSON.parse(response)
+    rescue StandardError
+      nil
+    end
   end
 
   def show
