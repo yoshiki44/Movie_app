@@ -2,7 +2,6 @@
 
 module Users
   class SessionsController < Devise::SessionsController
-
     def check_guest_user
       return unless current_user&.guest_user?
 

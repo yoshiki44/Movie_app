@@ -24,6 +24,17 @@ class MoviesController < ApplicationController
     @movies = Kaminari.paginate_array(filtered_movies).page(params[:page]).per(20)
   end
 
+  def show
+    api_key = ENV.fetch('TMDB_API', nil)
+    movie_id = params[:id]
+    url = "https://api.themoviedb.org/3/movie/#{movie_id}?api_key=#{api_key}&language=ja"
+    @movie = fetch_json(url) || {} # 取得できなかった場合は空のハッシュ
+  end
+
+  def search
+    redirect_to movies_path(min_runtime: params[:min_runtime], max_runtime: params[:max_runtime])
+  end
+
   private
 
   def build_search_url(base_url, api_key)
@@ -79,16 +90,5 @@ class MoviesController < ApplicationController
     rescue StandardError
       nil
     end
-  end
-
-  def show
-    api_key = ENV.fetch('TMDB_API', nil)
-    movie_id = params[:id]
-    url = "https://api.themoviedb.org/3/movie/#{movie_id}?api_key=#{api_key}&language=ja"
-    @movie = fetch_json(url) || {} # 取得できなかった場合は空のハッシュ
-  end
-
-  def search
-    redirect_to movies_path(min_runtime: params[:min_runtime], max_runtime: params[:max_runtime])
   end
 end

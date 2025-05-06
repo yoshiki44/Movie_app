@@ -13,10 +13,6 @@ body {
 
 /* 🔍 検索フォーム */
 .search {
-  background: rgba(34, 34, 34, 0.9);
-  padding: 20px;
-  border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(255, 0, 0, 0.5);
   color: white;
   text-align: center;
   margin-bottom: 30px;
@@ -102,6 +98,10 @@ body {
   margin: 0 auto; /* 中央配置 */
 }
 
+.fw-bolder {
+  color: gold;
+}
+
 /* 📌 4列 × 5行を維持 */
 .col {
   flex: 1 1 calc(25% - 20px); /* 4列に調整 */
@@ -165,4 +165,34 @@ footer {
   text-align: center;
   color: #bbb;
   font-size: 0.9rem;
+}
+
+.movie-detail-container {
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(255, 0, 0, 0.3);
+  max-width: 960px;
+  margin: 30px auto;
+  color: white;
+}
+
+.poster-small {
+  width: 150px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(255, 255, 255, 0.2);
+}
+
+.movie-info {
+  flex: 1;
+  min-width: 200px;
+}
+
+.movie-info h2 {
+  font-weight: bold;
+  color: gold;
+  text-shadow: 1px 1px 5px rgba(255, 215, 0, 0.5);
+}
+
+.movie-info p {
+  margin-bottom: 8px;
 }

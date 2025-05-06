@@ -8,20 +8,11 @@
     <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
     <%= javascript_pack_tag 'application', 'data-turbolinks-track': 'reload' %>
 
-    <div class = header-list>
-      <% if flash[:notice] %>
-        <p>Notice: <%= flash[:notice] %></p>
-      <% end %>
-      <% if flash[:alert] %>
-        <p>Alert: <%= flash[:alert] %></p>
-      <% end %>
-    </div>
-
     <!-- Header -->
     <header class="bg-dark py-3">
       <div class="container px-4 px-lg-5">
         <div class="header-title text-white mb-3">
-          <h1 class="fw-bolder">Runtime Movies</h1>
+          <%= link_to "Runtime Movies", root_path, class: "app-title" %>
           <p class="lead fw-normal text-white-50 mb-0">上映時間からお好みの映画を探そう</p>
         </div>
       </div>
@@ -44,7 +35,6 @@
                   <% if user_signed_in? %>
                     <%= button_to "ログアウト", destroy_user_session_path, method: :delete, class: "dropdown-item" %>
                     <% unless current_user.email == 'guest@example.com' %>
-                      <li><%= link_to "パスワード変更", edit_user_password_path, class: "dropdown-item" %></li>
                       <li><%= link_to "アカウント設定", edit_user_registration_path, class: "dropdown-item" %></li>
                     <% end %>
                   <% else %>
@@ -61,6 +51,14 @@
     </header>
 
   <body>
+    <div class = header-list>
+      <% if flash[:notice] %>
+        <p>Notice: <%= flash[:notice] %></p>
+      <% end %>
+      <% if flash[:alert] %>
+        <p>Alert: <%= flash[:alert] %></p>
+      <% end %>
+    </div>
     <%= yield %>
   </body>
 
