@@ -4,5 +4,14 @@ ja:
     guest_logout: "ゲストユーザーはログアウトしました。"
     add_to_favorites: "お気に入りに追加しました！"
     remove_from_favorites: "お気に入り解除しました。"
+
   alert:
     guest_change: "ゲストユーザーのため変更できません"
+
+  activerecord:
+    errors:
+      models:
+        favorite:
+          attributes:
+            movie_id:
+              taken: "はすでにお気に入り登録されています"
