@@ -29,23 +29,28 @@
             <div class="col mb-5">
               <div class="card h-100 d-flex flex-column">
                 <!-- Product image -->
-                <% if movie['poster_path'] %>
-                  <%= image_tag "https://image.tmdb.org/t/p/w200#{movie['poster_path']}", class: "card-img-top" %>
+                <% if movie.poster_path %>
+                  <%= image_tag "https://image.tmdb.org/t/p/w200#{movie.poster_path}", class: "card-img-top" %>
                 <% end %>
 
                 <div class="card-body p-4">
                   <div class="text-center">
                     <!-- Movie title -->
-                    <%= link_to movie_path(movie['id']) do %>
-                      <p class="fw-bolder"><%= movie['title'] %></p>
+                    <% if movie.id.present? %>
+                      <%= link_to movie_path(movie.id) do %>
+                        <p class="fw-bolder"><%= movie.title %></p>
+                      <% end %>
+                    <% else %>
+                      <p class="fw-bolder"><%= movie.title || "タイトル未取得" %></p>
                     <% end %>
 
                     <!-- 🔥 ジャンル表示 -->
-                    <% if movie['genre_ids'] && @genres %>
-                      <p>ジャンル：<%= movie['genre_ids'].map { |id| @genres[id] }.compact.join(', ') %></p>
+                    <% if movie.genre_ids.present? && @genres %>
+                      <% genre_names = movie.genre_ids.split(',').map(&:to_i).map { |id| @genres[id] }.compact %>
+                      <p>ジャンル：<%= genre_names.join(', ') %></p>
                     <% end %>
 
-                    <p>公開日：<%= movie['release_date'] %></p>
+                    <p>公開日：<%= movie.release_date %></p>
 
                     <% if user_signed_in? %>
                       <% favorite = current_user.favorites.find_by(movie_id: movie['id']) %>

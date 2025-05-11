@@ -1,34 +1,21 @@
 # frozen_string_literal: true
 
 class MoviesController < ApplicationController
-  require 'net/http'
-  require 'json'
-
   def index
-    api_key = ENV.fetch('TMDB_API', nil)
-    base_url = 'https://api.themoviedb.org/3'
-    total_pages_to_fetch = 20
-
     @current_page = (params[:page] || 1).to_i
+    api_key = ENV.fetch('TMDB_API', nil)
+    service = TmdbMovieService.new(api_key)
 
-    search_url = build_search_url(base_url, api_key)
-    all_movies = fetch_movies(search_url, total_pages_to_fetch)
+    search_url = build_search_url(api_key)
+    @genres = service.fetch_genres
+    raw_movies = service.fetch_movies(search_url, 20)
+    processed_movies = process_movies(raw_movies, service)
 
-    filtered_movies = if params[:min_runtime].present? && params[:max_runtime].present?
-                        filter_movies_by_runtime(all_movies, base_url, api_key)
-                      else
-                        all_movies
-                      end
-
-    @genres = fetch_genres(base_url, api_key)
-    @movies = Kaminari.paginate_array(filtered_movies).page(params[:page]).per(20)
+    @movies = Kaminari.paginate_array(processed_movies).page(params[:page]).per(20)
   end
 
   def show
-    api_key = ENV.fetch('TMDB_API', nil)
-    movie_id = params[:id]
-    url = "https://api.themoviedb.org/3/movie/#{movie_id}?api_key=#{api_key}&language=ja"
-    @movie = fetch_json(url) || {} # 取得できなかった場合は空のハッシュ
+    @movie = Movie.find_by(tmdb_id: params[:id]) || fetch_and_store_movie(params[:id])
   end
 
   def search
@@ -37,7 +24,24 @@ class MoviesController < ApplicationController
 
   private
 
-  def build_search_url(base_url, api_key)
+  def fetch_and_store_movie(tmdb_id)
+    api_key = ENV.fetch('TMDB_API', nil)
+    service = TmdbMovieService.new(api_key)
+    data = service.fetch_movie_details(tmdb_id)
+    return unless data
+
+    Movie.create!(
+      tmdb_id: data['id'],
+      title: data['title'],
+      overview: data['overview'],
+      poster_path: data['poster_path'],
+      release_date: data['release_date'],
+      runtime: data['runtime']
+    )
+  end
+
+  def build_search_url(api_key)
+    base_url = 'https://api.themoviedb.org/3'
     if params[:looking_for].present?
       "#{base_url}/search/movie?api_key=#{api_key}&language=ja&query=#{URI.encode_www_form_component(params[:looking_for])}"
     else
@@ -45,50 +49,15 @@ class MoviesController < ApplicationController
     end
   end
 
-  def fetch_movies(base_url, total_pages)
-    all_movies = []
+  def process_movies(raw_movies, service)
+    movies = raw_movies.map { |data| service.find_or_create_movie(data) }.compact
 
-    (1..total_pages).each do |page|
-      url = "#{base_url}&page=#{page}"
-      response = Net::HTTP.get(URI.parse(url))
-      parsed = begin
-        JSON.parse(response)
-      rescue StandardError
-        {}
-      end
-
-      break if parsed['results'].blank?
-
-      all_movies += parsed['results']
-    end
-
-    all_movies
-  end
-
-  def filter_movies_by_runtime(movies, base_url, api_key)
-    min_runtime = params[:min_runtime].to_i
-    max_runtime = params[:max_runtime].to_i
-
-    movies.select do |movie|
-      details_url = "#{base_url}/movie/#{movie['id']}?api_key=#{api_key}&language=ja"
-      details = fetch_json(details_url)
-
-      details && details['runtime'].to_i.between?(min_runtime, max_runtime)
-    end
-  end
-
-  def fetch_genres(base_url, api_key)
-    url = "#{base_url}/genre/movie/list?api_key=#{api_key}&language=ja"
-    response = fetch_json(url)
-    response['genres'].to_h { |g| [g['id'], g['name']] }
-  end
-
-  def fetch_json(url)
-    response = Net::HTTP.get(URI.parse(url))
-    begin
-      JSON.parse(response)
-    rescue StandardError
-      nil
+    if params[:min_runtime].present? && params[:max_runtime].present?
+      min = params[:min_runtime].to_i
+      max = params[:max_runtime].to_i
+      movies.select { |movie| movie.runtime.to_i.between?(min, max) }
+    else
+      movies
     end
   end
 end

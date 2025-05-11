@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_05_08_125028) do
+ActiveRecord::Schema.define(version: 2025_05_11_125835) do
 
   create_table "favorites", force: :cascade do |t|
     t.integer "user_id", null: false
@@ -26,6 +26,12 @@ ActiveRecord::Schema.define(version: 2025_05_08_125028) do
     t.datetime "updated_at", precision: 6, null: false
     t.string "title"
     t.integer "runtime"
+    t.integer "tmdb_id"
+    t.text "overview"
+    t.string "poster_path"
+    t.date "release_date"
+    t.string "genre_ids"
+    t.index ["tmdb_id"], name: "index_movies_on_tmdb_id", unique: true
   end
 
   create_table "users", force: :cascade do |t|
