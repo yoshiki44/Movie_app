@@ -7,6 +7,11 @@ ja:
 
   alert:
     guest_change: "ゲストユーザーのため変更できません"
+    movie_not_found: "指定された映画が見つかりませんでした。"
+    favorite_not_found: "お気に入りが見つかりませんでした。"
+  notices:
+    removed_from_favorites: "お気に入りを解除しました。"
+    fetching_data: "データ取得中です。しばらくしてから再読み込みしてください。"
 
   activerecord:
     errors:

@@ -53,11 +53,11 @@
                     <p>公開日：<%= movie.release_date %></p>
 
                     <% if user_signed_in? %>
-                      <% favorite = current_user.favorites.find_by(movie_id: movie['id']) %>
+                      <% favorite = current_user.favorites.find_by(movie_id: movie.id) %>
                       <% if favorite %>
-                        <%= button_to "お気に入り解除", favorite_path(movie['id'], favorite.id), method: :delete, class: "btn btn-danger" %>
+                        <%= button_to "お気に入り解除", favorite_path(favorite), method: :delete, class: "btn btn-danger" %>
                       <% else %>
-                        <%= button_to "お気に入り追加", movie_favorites_path(movie_id: movie['id']), method: :post, class: "btn btn-primary" %>
+                        <%= button_to "お気に入り追加", movie_favorites_path(movie_id: movie.tmdb_id), method: :post, class: "btn btn-primary" %>
                       <% end %>
                     <% else %>
                       <p><a href="<%= new_user_session_path %>">ログイン</a> するとお気に入り登録ができます</p>

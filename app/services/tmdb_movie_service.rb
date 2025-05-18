@@ -71,6 +71,14 @@ class TmdbMovieService
     )
   end
 
+  def build_search_url(query = nil)
+    if query.present?
+      "#{@base_url}/search/movie?api_key=#{@api_key}&language=ja&query=#{URI.encode_www_form_component(query)}"
+    else
+      "#{@base_url}/movie/popular?api_key=#{@api_key}&language=ja"
+    end
+  end
+
   private
 
   def fetch_json(url)
