@@ -21,8 +21,9 @@
       </div>
     <% end %>
   </div>
-  <div class="form-group">
-    <%= link_to '評価順で並び替え', movies_path(sort: 'vote_average'), class: 'btn btn-secondary' %>
+  <div class="sort-links text-center my-4">
+    <%= link_to '評価順で並び替え', movies_path(sort: 'vote_average'), class: 'sort-link' %>
+    <%= link_to '公開日順で並び替え', movies_path(sort: 'release_date'), class: 'sort-link' %>
   </div>
   <section class="py-5">
     <div class="container px-4 px-lg-5 mt-5">

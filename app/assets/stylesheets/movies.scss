@@ -15,7 +15,7 @@ body {
 .search {
   color: white;
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 }
 
 .search h1 {
@@ -96,6 +96,30 @@ body {
   gap: 20px; /* カード間の余白 */
   max-width: 1200px; /* 最大幅を指定 */
   margin: 0 auto; /* 中央配置 */
+}
+.sort-links {
+  display: flex;
+  justify-content: center;
+  gap: 2rem; // 間隔（2remは適宜調整可能）
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.sort-link {
+  color: gold;
+  text-decoration: none;
+  font-weight: bold;
+  font-size: 1.1rem;
+  padding: 0.5rem 1rem;
+  border: 2px solid gold;
+  border-radius: 5px;
+  transition: background-color 0.3s, color 0.3s;
+
+  &:hover {
+    background-color: gold;
+    color: #000;
+    text-decoration: none;
+  }
 }
 
 .fw-bolder {

@@ -17,8 +17,11 @@ class MoviesController < ApplicationController
     processed_movies = process_movies(raw_movies, service)
 
     # 並び替え処理
-    if params[:sort] == 'vote_average'
-      processed_movies.sort_by! { |m| -m.vote_average.to_f } # 降順
+    case params[:sort]
+    when 'vote_average'
+      processed_movies.sort_by! { |m| -m.vote_average.to_f } # 評価順（降順）
+    when 'release_date'
+      processed_movies.sort_by! { |m| -(m.release_date.to_date.to_time.to_i rescue 0) } # 公開日順（降順）
     end
 
     @movies = Kaminari.paginate_array(processed_movies).page(params[:page]).per(20)
