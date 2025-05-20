@@ -21,6 +21,9 @@
       </div>
     <% end %>
   </div>
+  <div class="form-group">
+    <%= link_to '評価順で並び替え', movies_path(sort: 'vote_average'), class: 'btn btn-secondary' %>
+  </div>
   <section class="py-5">
     <div class="container px-4 px-lg-5 mt-5">
       <div class="row gx-4 gx-lg-5 row-cols-1 row-cols-md-3 row-cols-xl-3 justify-content-center align-items-stretch">
@@ -51,6 +54,7 @@
                     <% end %>
 
                     <p>公開日：<%= movie.release_date %></p>
+                    <p>評価：<%= number_with_precision(movie.vote_average, precision: 1) || '評価なし' %> / 10</p>
 
                     <% if user_signed_in? %>
                       <% favorite = current_user.favorites.find_by(movie_id: movie.id) %>

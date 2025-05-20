@@ -16,6 +16,11 @@ class MoviesController < ApplicationController
     raw_movies = service.fetch_movies(search_url, 20)
     processed_movies = process_movies(raw_movies, service)
 
+    # 並び替え処理
+    if params[:sort] == 'vote_average'
+      processed_movies.sort_by! { |m| -m.vote_average.to_f } # 降順
+    end
+
     @movies = Kaminari.paginate_array(processed_movies).page(params[:page]).per(20)
 
     return unless Movie.count.zero?
