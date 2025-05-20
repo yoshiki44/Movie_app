@@ -37,7 +37,7 @@
                   <div class="text-center">
                     <!-- Movie title -->
                     <% if movie.id.present? %>
-                      <%= link_to movie_path(movie.id) do %>
+                      <%= link_to movie_path(movie.tmdb_id) do %>
                         <p class="fw-bolder"><%= movie.title %></p>
                       <% end %>
                     <% else %>

@@ -46,7 +46,8 @@ class TmdbMovieService
       poster_path: data['poster_path'],
       release_date: data['release_date'],
       runtime: details['runtime'],
-      genre_ids: data['genre_ids']&.join(',')
+      genre_ids: data['genre_ids']&.join(','),
+      vote_average: data['vote_average']
     )
     sleep 0.1
     movie
@@ -67,7 +68,8 @@ class TmdbMovieService
       overview: data['overview'],
       poster_path: data['poster_path'],
       release_date: data['release_date'],
-      runtime: data['runtime']
+      runtime: data['runtime'],
+      vote_average: data['vote_average']
     )
   end
 
