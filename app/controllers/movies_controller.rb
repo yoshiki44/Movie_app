@@ -21,7 +21,13 @@ class MoviesController < ApplicationController
     when 'vote_average'
       processed_movies.sort_by! { |m| -m.vote_average.to_f } # 評価順（降順）
     when 'release_date'
-      processed_movies.sort_by! { |m| -(m.release_date.to_date.to_time.to_i rescue 0) } # 公開日順（降順）
+      processed_movies.sort_by! do |m|
+        -begin
+          m.release_date.to_date.to_time.to_i
+        rescue StandardError
+          0
+        end
+      end
     end
 
     @movies = Kaminari.paginate_array(processed_movies).page(params[:page]).per(20)
@@ -84,9 +90,19 @@ class MoviesController < ApplicationController
     if params[:min_runtime].present? && params[:max_runtime].present?
       min = params[:min_runtime].to_i
       max = params[:max_runtime].to_i
-      movies.select { |movie| movie.runtime.to_i.between?(min, max) }
-    else
-      movies
+      movies = movies.select { |movie| movie.runtime.to_i.between?(min, max) }
     end
+
+    case params[:sort]
+    when 'vote_average'
+      movies.sort_by! { |movie| -(movie.vote_average || 0) }
+    when 'release_date'
+      movies.sort_by! do |movie|
+        date = Date.parse(movie.release_date) rescue Date.new(1900)
+        -date.to_time.to_i
+      end
+    end
+
+    movies
   end
 end
