@@ -19,7 +19,7 @@ class MoviesController < ApplicationController
     # 並び替え処理
     case params[:sort]
     when 'vote_average'
-      processed_movies.sort_by! { |m| -m.vote_average.to_f } # 評価順（降順）
+      processed_movies.sort_by! { |m| -m.vote_average.to_f }
     when 'release_date'
       processed_movies.sort_by! do |m|
         -begin
@@ -85,24 +85,35 @@ class MoviesController < ApplicationController
   end
 
   def process_movies(raw_movies, service)
-    movies = raw_movies.map { |data| service.find_or_create_movie(data) }.compact
+    movies = build_movies(raw_movies, service)
+    movies = filter_by_runtime(movies)
+    movies = sort_movies(movies)
+    movies
+  end
 
-    if params[:min_runtime].present? && params[:max_runtime].present?
-      min = params[:min_runtime].to_i
-      max = params[:max_runtime].to_i
-      movies = movies.select { |movie| movie.runtime.to_i.between?(min, max) }
-    end
+  def build_movies(raw_movies, service)
+    raw_movies.map { |data| service.find_or_create_movie(data) }.compact
+  end
 
+  def filter_by_runtime(movies)
+    return movies unless params[:min_runtime].present? && params[:max_runtime].present?
+
+    min = params[:min_runtime].to_i
+    max = params[:max_runtime].to_i
+    movies.select { |movie| movie.runtime.to_i.between?(min, max) }
+  end
+
+  def sort_movies(movies)
     case params[:sort]
     when 'vote_average'
-      movies.sort_by! { |movie| -(movie.vote_average || 0) }
+      movies.sort_by { |movie| -(movie.vote_average || 0) }
     when 'release_date'
-      movies.sort_by! do |movie|
+      movies.sort_by do |movie|
         date = Date.parse(movie.release_date) rescue Date.new(1900)
         -date.to_time.to_i
       end
+    else
+      movies
     end
-
-    movies
   end
 end
