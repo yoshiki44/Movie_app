@@ -56,6 +56,14 @@ class MoviesController < ApplicationController
       max = params[:max_runtime].to_i
       @movies = @movies.where(runtime: min..max)
     end
+
+    case params[:sort]
+    when 'vote_average'
+      @movies = @movies.order(vote_average: :desc)
+    when 'release_date'
+      @movies = @movies.order(release_date: :desc)
+    end
+
     @movies = @movies.page(params[:page]).per(20)
   end
 
@@ -86,37 +94,11 @@ class MoviesController < ApplicationController
 
   def process_movies(raw_movies, service)
     movies = build_movies(raw_movies, service)
-    movies = filter_by_runtime(movies)
-    sort_movies(movies)
+    processed = MovieProcessingService.new(movies, params).filter_by_runtime
+    MovieProcessingService.new(processed, params).sort
   end
 
   def build_movies(raw_movies, service)
     raw_movies.map { |data| service.find_or_create_movie(data) }.compact
-  end
-
-  def filter_by_runtime(movies)
-    return movies unless params[:min_runtime].present? && params[:max_runtime].present?
-
-    min = params[:min_runtime].to_i
-    max = params[:max_runtime].to_i
-    movies.select { |movie| movie.runtime.to_i.between?(min, max) }
-  end
-
-  def sort_movies(movies)
-    case params[:sort]
-    when 'vote_average'
-      movies.sort_by { |movie| -(movie.vote_average || 0) }
-    when 'release_date'
-      movies.sort_by do |movie|
-        date = begin
-          Date.parse(movie.release_date)
-        rescue StandardError
-          Date.new(1900)
-        end
-        -date.to_time.to_i
-      end
-    else
-      movies
-    end
   end
 end
