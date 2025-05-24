@@ -1,0 +1,36 @@
+version: 2.1
+
+jobs:
+  deploy:
+    docker:
+      - image: cimg/ruby:3.2.2
+    steps:
+      - checkout
+      - run:
+          name: Install Heroku CLI
+          command: |
+            curl https://cli-assets.heroku.com/install.sh | sh
+      - run:
+          name: Set up git remote
+          command: |
+            git remote add heroku https://git.heroku.com/${HEROKU_APP_NAME}.git
+      - run:
+          name: Heroku authentication
+          command: |
+            echo "machine api.heroku.com" > ~/.netrc
+            echo "  login ${HEROKU_EMAIL}" >> ~/.netrc
+            echo "  password ${HEROKU_API_KEY}" >> ~/.netrc
+            echo "machine git.heroku.com" >> ~/.netrc
+            echo "  login ${HEROKU_EMAIL}" >> ~/.netrc
+            echo "  password ${HEROKU_API_KEY}" >> ~/.netrc
+            chmod 600 ~/.netrc
+      - run:
+          name: Push to Heroku
+          command: |
+            git push heroku main -f
+
+workflows:
+  version: 2
+  deploy:
+    jobs:
+      - deploy
