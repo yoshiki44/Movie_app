@@ -87,8 +87,7 @@ class MoviesController < ApplicationController
   def process_movies(raw_movies, service)
     movies = build_movies(raw_movies, service)
     movies = filter_by_runtime(movies)
-    movies = sort_movies(movies)
-    movies
+    sort_movies(movies)
   end
 
   def build_movies(raw_movies, service)
@@ -109,7 +108,11 @@ class MoviesController < ApplicationController
       movies.sort_by { |movie| -(movie.vote_average || 0) }
     when 'release_date'
       movies.sort_by do |movie|
-        date = Date.parse(movie.release_date) rescue Date.new(1900)
+        date = begin
+          Date.parse(movie.release_date)
+        rescue StandardError
+          Date.new(1900)
+        end
         -date.to_time.to_i
       end
     else

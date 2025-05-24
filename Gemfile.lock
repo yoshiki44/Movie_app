@@ -210,6 +210,7 @@ GEM
     parser (3.3.8.0)
       ast (~> 2.4.1)
       racc
+    pg (1.5.9)
     popper_js (2.11.8)
     prism (1.4.0)
     pry (0.15.2)
@@ -409,6 +410,7 @@ DEPENDENCIES
   jquery-rails
   kaminari
   listen (~> 3.3)
+  pg
   pry-rails
   puma (~> 5.0)
   rails (~> 6.1.7, >= 6.1.7.7)
