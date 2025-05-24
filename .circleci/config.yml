@@ -1,31 +1,37 @@
-# Use the latest 2.1 version of CircleCI pipeline process engine.
-# See: https://circleci.com/docs/configuration-reference
 version: 2.1
 
-# Define a job to be invoked later in a workflow.
-# See: https://circleci.com/docs/jobs-steps/#jobs-overview & https://circleci.com/docs/configuration-reference/#jobs
 jobs:
-  say-hello:
-    # Specify the execution environment. You can specify an image from Docker Hub or use one of our convenience images from CircleCI's Developer Hub.
-    # See: https://circleci.com/docs/executor-intro/ & https://circleci.com/docs/configuration-reference/#executor-job
+  deploy:
     docker:
-      # Specify the version you desire here
-      # See: https://circleci.com/developer/images/image/cimg/base
-      - image: cimg/base:current
-
-    # Add steps to the job
-    # See: https://circleci.com/docs/jobs-steps/#steps-overview & https://circleci.com/docs/configuration-reference/#steps
+      - image: cimg/ruby:3.2.2
     steps:
-      # Checkout the code as the first step.
       - checkout
       - run:
-          name: "Say hello"
-          command: "echo Hello, World!"
+          name: Install Heroku CLI
+          command: |
+            curl https://cli-assets.heroku.com/install.sh | sh
+      - run:
+          name: Set up git remote
+          command: |
+            git remote add heroku https://git.heroku.com/${HEROKU_APP_NAME}.git
+      - run:
+          name: Heroku authentication
+          command: |
+            echo "machine api.heroku.com" > ~/.netrc
+            echo "  login ${HEROKU_EMAIL}" >> ~/.netrc
+            echo "  password ${HEROKU_API_KEY}" >> ~/.netrc
+            echo "machine git.heroku.com" >> ~/.netrc
+            echo "  login ${HEROKU_EMAIL}" >> ~/.netrc
+            echo "  password ${HEROKU_API_KEY}" >> ~/.netrc
+            chmod 600 ~/.netrc
+      - run:
+          name: Push to Heroku
+          command: |
+            git push heroku main -f
 
-# Orchestrate jobs using workflows
-# See: https://circleci.com/docs/workflows/ & https://circleci.com/docs/configuration-reference/#workflows
 workflows:
-  say-hello-workflow: # This is the name of the workflow, feel free to change it to better match your workflow.
-    # Inside the workflow, you define the jobs you want to run.
+  version: 2
+  deploy:
     jobs:
-      - say-hello
+      - deploy
+

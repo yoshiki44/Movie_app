@@ -21,6 +21,10 @@
       </div>
     <% end %>
   </div>
+  <div class="sort-links text-center my-4">
+    <%= link_to '評価順で並び替え', movies_path(min_runtime: params[:min_runtime], max_runtime: params[:max_runtime], sort: 'vote_average'), class: 'sort-link' %>
+    <%= link_to '公開日順で並び替え', movies_path(min_runtime: params[:min_runtime], max_runtime: params[:max_runtime], sort: 'release_date'), class: 'sort-link' %>
+  </div>
   <section class="py-5">
     <div class="container px-4 px-lg-5 mt-5">
       <div class="row gx-4 gx-lg-5 row-cols-1 row-cols-md-3 row-cols-xl-3 justify-content-center align-items-stretch">
@@ -37,7 +41,7 @@
                   <div class="text-center">
                     <!-- Movie title -->
                     <% if movie.id.present? %>
-                      <%= link_to movie_path(movie.id) do %>
+                      <%= link_to movie_path(movie.tmdb_id) do %>
                         <p class="fw-bolder"><%= movie.title %></p>
                       <% end %>
                     <% else %>
@@ -51,6 +55,7 @@
                     <% end %>
 
                     <p>公開日：<%= movie.release_date %></p>
+                    <p>評価：<%= number_with_precision(movie.vote_average, precision: 1) || '評価なし' %> / 10</p>
 
                     <% if user_signed_in? %>
                       <% favorite = current_user.favorites.find_by(movie_id: movie.id) %>

@@ -5,6 +5,16 @@
 
   <div class="movie-info text-white">
     <h2 class="mb-2"><%= @movie['title'] %></h2>
+    <% if user_signed_in? %>
+      <% favorite = current_user.favorites.find_by(movie_id: @movie.tmdb_id) %>
+      <% if favorite %>
+        <%= button_to "お気に入り解除", favorite_path(favorite), method: :delete, class: "btn btn-danger" %>
+      <% else %>
+        <%= button_to "お気に入り追加", movie_favorites_path(movie_id: @movie.tmdb_id), method: :post, class: "btn btn-primary" %>
+      <% end %>
+    <% else %>
+      <p><a href="<%= new_user_session_path %>">ログイン</a> するとお気に入り登録ができます</p>
+    <% end %>
     <p>公開日：<%= @movie['release_date'] %></p>
     <p>上映時間：<%= @movie['runtime'] %> 分</p>
 
@@ -12,7 +22,7 @@
       <p>ジャンル：<%= @movie['genres'].map { |g| g['name'] }.join(', ') %></p>
     <% end %>
 
-    <p>評価：<%= @movie['vote_average'] %> / 10</p>
+    <p>評価：<%= number_with_precision(@movie['vote_average'], precision: 1) || '評価なし' %> / 10</p>
 
     <% if @movie['production_countries'] %>
       <p>製作国：<%= @movie['production_countries'].map { |c| c['name'] }.join(', ') %></p>
@@ -23,6 +33,14 @@
     <% end %>
 
     <hr class="bg-light">
-    <p><%= truncate(@movie['overview'], length: 200) %></p>
+    <div class="">
+      あらすじ
+    </div>
+
+    <% if @movie['overview'].present? %>
+      <p><%= truncate(@movie['overview'], length: 200) || '説明なし' %></p>
+    <% else %>
+      <p>説明なし</p>
+    <% end %>
   </div>
 </div>

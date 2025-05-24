@@ -15,7 +15,7 @@
                   <p class="fw-bolder"><%= movie['title'] %></p>
                 <% end %>
                 <p>公開日：<%= movie['release_date'] %></p>
-                <p>評価：<%= movie['vote_average'] %></p>
+                <p>評価：<%= number_with_precision(movie['vote_average'], precision: 1) || '評価なし' %> / 10</p>
               </div>
             </div>
 
