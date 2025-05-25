@@ -6,7 +6,7 @@ orbs:
 executors:
   default:
     docker:
-      - image: cimg/ruby:3.2.0-node # ✅ NodeとYarn同梱
+      - image: cimg/ruby:3.2.0-node
     working_directory: ~/app
 
 jobs:
@@ -25,7 +25,30 @@ jobs:
           name: Install system dependencies
           command: |
             sudo apt-get update
-            sudo apt-get install -y libvips
+            sudo apt-get install -y \
+              curl unzip wget gnupg2 libasound2 libatk-bridge2.0-0 libgtk-3-0 \
+              libxss1 libnss3 libx11-xcb1 xdg-utils fonts-liberation \
+              libappindicator3-1
+
+      - run:
+          name: Install latest Chrome
+          command: |
+            curl -sSL https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor -o /usr/share/keyrings/google-linux.gpg
+            echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-linux.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
+            sudo apt-get update
+            sudo apt-get install -y google-chrome-stable
+            google-chrome --version
+
+      - run:
+          name: Install matching ChromeDriver
+          command: |
+            CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
+            DRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
+            wget -O chromedriver.zip "https://chromedriver.storage.googleapis.com/${DRIVER_VERSION}/chromedriver_linux64.zip"
+            unzip chromedriver.zip
+            sudo mv chromedriver /usr/local/bin/
+            sudo chmod +x /usr/local/bin/chromedriver
+            chromedriver --version
 
       - run:
           name: Install Ruby gems
@@ -40,29 +63,8 @@ jobs:
       - run:
           name: Setup DB
           command: |
-            cp config/database.yml.ci config/database.yml || echo "No custom DB config"
+            cp config/database.yml.ci config/database.yml || echo "No DB override"
             bundle exec rails db:create db:schema:load
-
-      - run:
-          name: Install Chrome 122 & matching ChromeDriver
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y wget unzip curl fonts-liberation libappindicator3-1 libasound2
-
-            # Install specific Chrome version (122.0.6261.111)
-            wget https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_122.0.6261.111-1_amd64.deb
-            sudo apt install -y ./google-chrome-stable_122.0.6261.111-1_amd64.deb
-
-            # Get corresponding ChromeDriver
-            DRIVER_VERSION=$(curl -s https://chromedriver.storage.googleapis.com/LATEST_RELEASE_122)
-            wget -O chromedriver.zip "https://chromedriver.storage.googleapis.com/${DRIVER_VERSION}/chromedriver_linux64.zip"
-            unzip chromedriver.zip
-            sudo mv chromedriver /usr/local/bin/
-            sudo chmod +x /usr/local/bin/chromedriver
-
-            # Log versions
-            google-chrome --version
-            chromedriver --version
 
       - run:
           name: Run RSpec
