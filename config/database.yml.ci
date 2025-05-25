@@ -1,8 +1,7 @@
 test:
   adapter: postgresql
   encoding: unicode
-  database: circle_test
-  pool: 5
+  database: app_test
   username: postgres
-  password:
+  password: password
   host: 127.0.0.1

@@ -11,6 +11,13 @@ executors:
 
 jobs:
   build_test:
+    docker:
+      - image: cimg/ruby:3.2.0-node  # Rails + Node
+      - image: cimg/postgres:14.9    # ✅ PostgreSQLを追加
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: app_test
+          POSTGRES_PASSWORD: password
     executor: default
     steps:
       - checkout
