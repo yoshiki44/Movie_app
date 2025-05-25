@@ -1,37 +1,67 @@
 version: 2.1
 
+orbs:
+  ruby: circleci/ruby@1.7.0
+  node: circleci/node@4.1.0
+  heroku: circleci/heroku@1.2.6
+
 jobs:
-  deploy:
+  build_test:
     docker:
-      - image: cimg/ruby:3.2.2
+      - image: cimg/ruby:3.2.0
+    working_directory: ~/app
+
     steps:
       - checkout
+
       - run:
-          name: Install Heroku CLI
+          name: Install dependencies
           command: |
-            curl https://cli-assets.heroku.com/install.sh | sh
+            sudo apt-get update
+            sudo apt-get install -y libvips
+            gem install bundler
+            bundle install --jobs=4 --retry=3
+
+      - node/install:
+          node-version: '20.0.0'
+
       - run:
-          name: Set up git remote
-          command: |
-            git remote add heroku https://git.heroku.com/${HEROKU_APP_NAME}.git
+          name: Yarn install
+          command: yarn install
+
       - run:
-          name: Heroku authentication
+          name: Setup DB
           command: |
-            echo "machine api.heroku.com" > ~/.netrc
-            echo "  login ${HEROKU_EMAIL}" >> ~/.netrc
-            echo "  password ${HEROKU_API_KEY}" >> ~/.netrc
-            echo "machine git.heroku.com" >> ~/.netrc
-            echo "  login ${HEROKU_EMAIL}" >> ~/.netrc
-            echo "  password ${HEROKU_API_KEY}" >> ~/.netrc
-            chmod 600 ~/.netrc
+            cp config/database.yml.ci config/database.yml
+            bundle exec rails db:create db:schema:load
+
       - run:
-          name: Push to Heroku
+          name: Run RSpec
+          command: bundle exec rspec
+
+      - run:
+          name: Run RuboCop
+          command: bundle exec rubocop
+
+  deploy:
+    docker:
+      - image: cimg/ruby:3.2.0
+    steps:
+      - checkout
+      - heroku/install
+      - run:
+          name: Deploy to Heroku
           command: |
-            git push heroku main -f
+            git push https://heroku:${HEROKU_API_KEY}@git.heroku.com/runtime-movie.git main
 
 workflows:
   version: 2
-  deploy:
+  test_and_deploy:
     jobs:
-      - deploy
-
+      - build_test
+      - deploy:
+          requires:
+            - build_test
+          filters:
+            branches:
+              only: main
