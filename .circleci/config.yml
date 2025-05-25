@@ -42,7 +42,7 @@ jobs:
       - run:
           name: Install matching ChromeDriver
           command: |
-            CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
+            CHROME_VERSION=$(google-chrome --version | grep -oP '\d+' | head -1)
             DRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
             wget -O chromedriver.zip "https://chromedriver.storage.googleapis.com/${DRIVER_VERSION}/chromedriver_linux64.zip"
             unzip chromedriver.zip
