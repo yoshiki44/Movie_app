@@ -63,7 +63,7 @@ group :test do
   # Easy installation and use of web drivers to run system tests with browsers
   gem 'database_cleaner-active_record'
   gem 'pry-rails'
-  gem 'webdrivers'
+  # gem 'webdrivers'
   gem 'webmock'
 end
 
