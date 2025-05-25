@@ -50,19 +50,20 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y wget unzip curl fonts-liberation libappindicator3-1 libasound2
 
-            # 最新の Chrome をインストール
+            # Chrome をインストール
             wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
             sudo apt install -y ./google-chrome-stable_current_amd64.deb
 
-            # バージョンを取得して ChromeDriver の URL を作成
-            CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
-            DRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION}" || true)
+            # メジャーバージョンを取得（例: 136）
+            CHROME_VERSION=$(google-chrome --version | grep -oP '\d+' | head -1)
 
-            # フォールバック（バージョンが取得できない場合 latest にする）
+            # 対応する ChromeDriver バージョンを取得
+            DRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION}" || true)
             if [ -z "$DRIVER_VERSION" ]; then
               DRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE")
             fi
 
+            # ChromeDriver を取得・設置
             wget -O chromedriver.zip "https://chromedriver.storage.googleapis.com/${DRIVER_VERSION}/chromedriver_linux64.zip"
             unzip chromedriver.zip
             sudo mv chromedriver /usr/local/bin/
