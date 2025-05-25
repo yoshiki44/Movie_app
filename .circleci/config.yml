@@ -2,25 +2,27 @@ version: 2.1
 
 orbs:
   ruby: circleci/ruby@1.1.2
-  browser-tools: circleci/browser-tools@1.4.0
   heroku: circleci/heroku@1.2.6
 
 jobs:
   test:
     docker:
-      - image: cimg/ruby:3.2.2-browsers  # Chrome, Firefox等対応済み
+      - image: cimg/ruby:3.2.2-browsers
     steps:
-      - browser-tools/install-chrome
-      - browser-tools/install-chromedriver
-
       - checkout
-      
+
+      - run:
+          name: Check Chrome/Driver version
+          command: |
+            google-chrome --version
+            chromedriver --version
+
       - run:
           name: Install dependencies
           command: bundle install --jobs=4 --retry=3
 
       - run:
-          name: Set up DB
+          name: Setup DB
           command: |
             bundle exec rake db:create
             bundle exec rake db:schema:load
@@ -30,32 +32,16 @@ jobs:
           command: bundle exec rubocop
 
       - run:
-          name: Run RSpec tests
+          name: Run RSpec
           command: bundle exec rspec
-
-  deploy:
-    docker:
-      - image: cimg/ruby:3.2.2
-    steps:
-      - checkout
-
-      - run:
-          name: Install Heroku CLI
-          command: |
-            curl https://cli-assets.heroku.com/install.sh | sh
-
-      - run:
-          name: Deploy to Heroku
-          command: |
-            git remote add heroku https://git.heroku.com/runtime-movie.git
-            echo | heroku auth:token
-            git push heroku main -f
 
 workflows:
   test-and-deploy:
     jobs:
       - test
-      - deploy:
+      - heroku/deploy-via-git:
+          app-name: "runtime-movie"
+          branch: main
           requires:
             - test
           filters:
