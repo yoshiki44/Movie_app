@@ -1,38 +1,40 @@
 version: 2.1
 
 orbs:
-  ruby: circleci/ruby@1.7.0
-  node: circleci/node@4.1.0
   heroku: circleci/heroku@1.2.6
+
+executors:
+  default:
+    docker:
+      - image: cimg/ruby:3.2.0-node # ✅ NodeとYarn同梱イメージ
+    working_directory: ~/app
 
 jobs:
   build_test:
-    docker:
-      - image: cimg/ruby:3.2.0
-    working_directory: ~/app
-
+    executor: default
     steps:
       - checkout
 
       - run:
-          name: Install dependencies
+          name: Install system dependencies
           command: |
             sudo apt-get update
             sudo apt-get install -y libvips
+
+      - run:
+          name: Install Ruby gems
+          command: |
             gem install bundler
             bundle install --jobs=4 --retry=3
 
-      - node/install:
-          node-version: '20.0.0'
-
       - run:
           name: Yarn install
-          command: yarn install
+          command: yarn install --check-files
 
       - run:
           name: Setup DB
           command: |
-            cp config/database.yml.ci config/database.yml
+            cp config/database.yml.ci config/database.yml || echo "config/database.yml.ci not found"
             bundle exec rails db:create db:schema:load
 
       - run:
@@ -44,15 +46,15 @@ jobs:
           command: bundle exec rubocop
 
   deploy:
-    docker:
-      - image: cimg/ruby:3.2.0
+    executor: default
     steps:
       - checkout
       - heroku/install
       - run:
           name: Deploy to Heroku
           command: |
-            git push https://heroku:${HEROKU_API_KEY}@git.heroku.com/runtime-movie.git main
+            git remote add heroku https://git.heroku.com/runtime-movie.git || true
+            git push heroku main -f
 
 workflows:
   version: 2
