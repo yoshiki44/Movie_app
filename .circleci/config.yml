@@ -6,19 +6,18 @@ orbs:
 executors:
   default:
     docker:
-      - image: cimg/ruby:3.2.0-node # ✅ NodeとYarn同梱イメージ
+      - image: cimg/ruby:3.2.0-node # ✅ NodeとYarn同梱
     working_directory: ~/app
 
 jobs:
   build_test:
     docker:
-      - image: cimg/ruby:3.2.0-node  # Rails + Node
-      - image: cimg/postgres:14.9    # ✅ PostgreSQLを追加
+      - image: cimg/ruby:3.2.0-node
+      - image: cimg/postgres:14.9
         environment:
           POSTGRES_USER: postgres
           POSTGRES_DB: app_test
           POSTGRES_PASSWORD: password
-    executor: default
     steps:
       - checkout
 
@@ -41,35 +40,27 @@ jobs:
       - run:
           name: Setup DB
           command: |
-            cp config/database.yml.ci config/database.yml || echo "config/database.yml.ci not found"
+            cp config/database.yml.ci config/database.yml || echo "No custom DB config"
             bundle exec rails db:create db:schema:load
 
       - run:
-          name: Install latest Chrome & matching ChromeDriver
+          name: Install Chrome 122 & matching ChromeDriver
           command: |
             sudo apt-get update
             sudo apt-get install -y wget unzip curl fonts-liberation libappindicator3-1 libasound2
 
-            # Chrome をインストール
-            wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-            sudo apt install -y ./google-chrome-stable_current_amd64.deb
+            # Install specific Chrome version (122.0.6261.111)
+            wget https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_122.0.6261.111-1_amd64.deb
+            sudo apt install -y ./google-chrome-stable_122.0.6261.111-1_amd64.deb
 
-            # メジャーバージョンを取得（例: 136）
-            CHROME_VERSION=$(google-chrome --version | grep -oP '\d+' | head -1)
-
-            # 対応する ChromeDriver バージョンを取得
-            DRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION}" || true)
-            if [ -z "$DRIVER_VERSION" ]; then
-              DRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE")
-            fi
-
-            # ChromeDriver を取得・設置
+            # Get corresponding ChromeDriver
+            DRIVER_VERSION=$(curl -s https://chromedriver.storage.googleapis.com/LATEST_RELEASE_122)
             wget -O chromedriver.zip "https://chromedriver.storage.googleapis.com/${DRIVER_VERSION}/chromedriver_linux64.zip"
             unzip chromedriver.zip
             sudo mv chromedriver /usr/local/bin/
             sudo chmod +x /usr/local/bin/chromedriver
 
-            # ログ出力
+            # Log versions
             google-chrome --version
             chromedriver --version
 
