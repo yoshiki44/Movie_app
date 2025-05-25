@@ -45,22 +45,30 @@ jobs:
             bundle exec rails db:create db:schema:load
 
       - run:
-          name: Install Chrome 114 & ChromeDriver 114
+          name: Install latest Chrome & matching ChromeDriver
           command: |
             sudo apt-get update
             sudo apt-get install -y wget unzip curl fonts-liberation libappindicator3-1 libasound2
 
-            # Chrome 114 を明示的にインストール
-            wget https://dl.google.com/linux/chrome/deb/pool/main/g/google-chrome-stable/google-chrome-stable_114.0.5735.90-1_amd64.deb
-            sudo apt install -y ./google-chrome-stable_114.0.5735.90-1_amd64.deb
+            # 最新の Chrome をインストール
+            wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+            sudo apt install -y ./google-chrome-stable_current_amd64.deb
 
-            # ChromeDriver 114 をインストール
-            wget -O chromedriver.zip https://chromedriver.storage.googleapis.com/114.0.5735.90/chromedriver_linux64.zip
+            # バージョンを取得して ChromeDriver の URL を作成
+            CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
+            DRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION}" || true)
+
+            # フォールバック（バージョンが取得できない場合 latest にする）
+            if [ -z "$DRIVER_VERSION" ]; then
+              DRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE")
+            fi
+
+            wget -O chromedriver.zip "https://chromedriver.storage.googleapis.com/${DRIVER_VERSION}/chromedriver_linux64.zip"
             unzip chromedriver.zip
-            sudo mv chromedriver /usr/local/bin/chromedriver
+            sudo mv chromedriver /usr/local/bin/
             sudo chmod +x /usr/local/bin/chromedriver
 
-            # バージョン確認（ログに出しておくと安心）
+            # ログ出力
             google-chrome --version
             chromedriver --version
 
