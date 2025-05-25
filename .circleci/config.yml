@@ -16,6 +16,30 @@ jobs:
           command: sudo apt-get update && sudo apt-get install -y jq unzip
 
       - run:
+          name: Install matching ChromeDriver
+          command: |
+            CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+' | head -1)
+            echo "Installed Chrome version: $CHROME_VERSION"
+
+            # Fetch the corresponding chromedriver version
+            DRIVER_VERSION=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions.json \
+              | jq -r --arg ver "$CHROME_VERSION" '.channels.Stable.version | select(startswith($ver))')
+
+            if [ -z "$DRIVER_VERSION" ]; then
+              echo "No matching ChromeDriver version found for Chrome $CHROME_VERSION"
+              exit 1
+            fi
+
+            echo "Downloading ChromeDriver version $DRIVER_VERSION"
+
+            # Download and install chromedriver
+            curl -sSL "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/${DRIVER_VERSION}/linux64/chromedriver-linux64.zip" -o chromedriver.zip
+            unzip chromedriver.zip
+            sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
+            sudo chmod +x /usr/local/bin/chromedriver
+            chromedriver --version
+
+      - run:
           name: Check Chrome/Driver version
           command: |
             google-chrome --version
