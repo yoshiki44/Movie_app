@@ -10,11 +10,11 @@ jobs:
     docker:
       - image: cimg/ruby:3.2.2-browsers  # Chrome, Firefox等対応済み
     steps:
-      - checkout
-
       - browser-tools/install-chrome
       - browser-tools/install-chromedriver
 
+      - checkout
+      
       - run:
           name: Install dependencies
           command: bundle install --jobs=4 --retry=3
