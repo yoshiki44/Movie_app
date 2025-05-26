@@ -8,24 +8,20 @@ orbs:
 jobs:
   test:
     docker:
-      - image: cimg/ruby:3.2.2-browsers
+      - image: cimg/ruby:3.2.2-browsers  # Chrome & ChromeDriver含む
     steps:
       - checkout
 
-      - browser-tools/install-chrome
-
       - run:
-          name: Install matching ChromeDriver
+          name: Install compatible ChromeDriver for current Chrome
           command: |
             set -ex
 
-            # Chromeのバージョン取得
             CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
             echo "Installed Chrome version: $CHROME_VERSION"
 
-            # 対応するChromeDriverのバージョンを取得
-            CHROMEDRIVER_VERSION=$(curl -s "https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json" \
-              | jq -r --arg ver "$CHROME_VERSION" '.channels.Stable.version as $v | if $v | startswith($ver) then $v else empty end')
+            CHROMEDRIVER_VERSION=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json \
+              | jq -r --arg ver "$CHROME_VERSION" '.versions[] | select(.version | startswith($ver)) | .version' | head -n 1)
 
             if [ -z "$CHROMEDRIVER_VERSION" ]; then
               echo "No matching ChromeDriver version found for Chrome $CHROME_VERSION"
@@ -34,12 +30,11 @@ jobs:
 
             echo "Matching ChromeDriver version: $CHROMEDRIVER_VERSION"
 
-            # ChromeDriverをダウンロード
             curl -sSL "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROMEDRIVER_VERSION/linux64/chromedriver-linux64.zip" -o chromedriver.zip
-
             unzip chromedriver.zip
             chmod +x chromedriver-linux64/chromedriver
             sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
+            rm -rf chromedriver.zip chromedriver-linux64
 
       - run:
           name: Install dependencies
@@ -67,8 +62,7 @@ jobs:
 
       - run:
           name: Install Heroku CLI
-          command: |
-            curl https://cli-assets.heroku.com/install.sh | sh
+          command: curl https://cli-assets.heroku.com/install.sh | sh
 
       - run:
           name: Deploy to Heroku
