@@ -15,20 +15,19 @@ jobs:
       - browser-tools/install-chrome
 
       - run:
-          name: Install matching ChromeDriver
+          name: Install matching ChromeDriver for installed Chrome
           command: |
+            set -ex
             sudo apt-get update && sudo apt-get install -y jq unzip
             CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+\.\d+')
             echo "Installed Chrome version: $CHROME_VERSION"
             CHROME_PREFIX=$(echo "$CHROME_VERSION" | grep -oP '^\d+\.\d+\.\d+')
             CHROMEDRIVER_VERSION=$(curl -s https://googlechromelabs.github.io/chrome-for-testing/last-known-good-versions-with-downloads.json \
-              | jq -r --arg prefix "$CHROME_PREFIX" '.versions[] | select(.version | startswith($prefix)) | .version' | head -n 1)
-
+              | jq -r --arg prefix "$CHROME_PREFIX" '.versions[]? | select(.version | startswith($prefix)) | .version' | head -n 1)
             if [ -z "$CHROMEDRIVER_VERSION" ]; then
               echo "No matching ChromeDriver version found for Chrome $CHROME_VERSION"
               exit 1
             fi
-
             echo "Matching ChromeDriver version: $CHROMEDRIVER_VERSION"
             curl -sSL "https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROMEDRIVER_VERSION/linux64/chromedriver-linux64.zip" -o chromedriver.zip
             unzip chromedriver.zip
