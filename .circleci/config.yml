@@ -61,6 +61,10 @@ jobs:
           command: bundle exec rubocop
 
       - run:
+          name: Webpacker compile
+          command: bundle exec rails webpacker:compile RAILS_ENV=test
+
+      - run:
           name: Run RSpec tests
           command: bundle exec rspec
 
