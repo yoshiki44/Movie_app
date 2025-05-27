@@ -15,7 +15,6 @@ Rails.root.glob('spec/support/**/*.rb').each { |f| require f }
 Capybara.server = :puma, { Silent: true } # 推奨: Pumaを明示的に使用
 Capybara.default_max_wait_time = 5 # or 10
 
-
 # Requires supporting ruby files with custom matchers and macros, etc, in
 # spec/support/ and its subdirectories. Files matching `spec/**/*_spec.rb` are
 # run as spec files by default. This means that files in spec/support that end
