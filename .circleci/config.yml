@@ -1,98 +1,94 @@
 version: 2.1
 
 orbs:
+  ruby: circleci/ruby@1.1.2
+  browser-tools: circleci/browser-tools@1.4.0
   heroku: circleci/heroku@1.2.6
 
-executors:
-  default:
-    docker:
-      - image: cimg/ruby:3.2.0-node
-    working_directory: ~/app
-
 jobs:
-  build_test:
+  test:
     docker:
-      - image: cimg/ruby:3.2.0-node
-      - image: cimg/postgres:14.9
-        environment:
-          POSTGRES_USER: postgres
-          POSTGRES_DB: app_test
-          POSTGRES_PASSWORD: password
+      - image: cimg/ruby:3.2.0-browsers  # Chrome & ChromeDriver含む
     steps:
-      - checkout
-
-      - run:
-          name: Install system dependencies
-          command: |
-            sudo apt-get update
-            sudo apt-get install -y \
-              curl unzip wget gnupg2 libasound2 libatk-bridge2.0-0 libgtk-3-0 \
-              libxss1 libnss3 libx11-xcb1 xdg-utils fonts-liberation \
-              libappindicator3-1
-
-      - run:
-          name: Install latest Chrome
-          command: |
-            curl -sSL https://dl.google.com/linux/linux_signing_key.pub | sudo gpg --dearmor -o /usr/share/keyrings/google-linux.gpg
-            echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google-linux.gpg] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
-            sudo apt-get update
-            sudo apt-get install -y google-chrome-stable
-            google-chrome --version
+      - browser-tools/install-chrome
 
       - run:
           name: Install matching ChromeDriver
           command: |
-            CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
-            DRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
-            wget -O chromedriver.zip "https://chromedriver.storage.googleapis.com/${DRIVER_VERSION}/chromedriver_linux64.zip"
+            set -ex
+            sudo apt-get update && sudo apt-get install -y unzip
+            CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+\.\d+')
+            echo "Installed Chrome version: $CHROME_VERSION"
+            CHROMEDRIVER_URL="https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROME_VERSION/linux64/chromedriver-linux64.zip"
+            echo "Downloading ChromeDriver from: $CHROMEDRIVER_URL"
+            curl -sSL "$CHROMEDRIVER_URL" -o chromedriver.zip
             unzip chromedriver.zip
-            sudo mv chromedriver /usr/local/bin/
-            sudo chmod +x /usr/local/bin/chromedriver
-            chromedriver --version
+            chmod +x chromedriver-linux64/chromedriver
+            sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
+            rm -rf chromedriver.zip chromedriver-linux64
+
+      - checkout
+
+      - browser-tools/install-chrome
 
       - run:
-          name: Install Ruby gems
+          name: Install matching ChromeDriver
           command: |
-            gem install bundler
-            bundle install --jobs=4 --retry=3
+            set -ex
+            sudo apt-get update && sudo apt-get install -y unzip
+            CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+\.\d+')
+            echo "Installed Chrome version: $CHROME_VERSION"
+            CHROMEDRIVER_URL="https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROME_VERSION/linux64/chromedriver-linux64.zip"
+            echo "Downloading ChromeDriver from: $CHROMEDRIVER_URL"
+            curl -sSL "$CHROMEDRIVER_URL" -o chromedriver.zip
+            unzip chromedriver.zip
+            chmod +x chromedriver-linux64/chromedriver
+            sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
+            rm -rf chromedriver.zip chromedriver-linux64
 
       - run:
-          name: Yarn install
-          command: yarn install --check-files
+          name: Install dependencies
+          command: bundle install --jobs=4 --retry=3
 
       - run:
-          name: Setup DB
+          name: Set up DB
           command: |
-            cp config/database.yml.ci config/database.yml || echo "No DB override"
-            bundle exec rails db:create db:schema:load
-
-      - run:
-          name: Run RSpec
-          command: bundle exec rspec
+            bundle exec rake db:create
+            bundle exec rake db:schema:load
 
       - run:
           name: Run RuboCop
           command: bundle exec rubocop
 
+      - run:
+          name: Run RSpec tests
+          command: bundle exec rspec
+
   deploy:
-    executor: default
+    docker:
+      - image: cimg/ruby:3.2.2
     steps:
       - checkout
-      - heroku/install
+
+      - run:
+          name: Install Heroku CLI
+          command: |
+            curl https://cli-assets.heroku.com/install.sh | sh
+
       - run:
           name: Deploy to Heroku
           command: |
-            git remote add heroku https://git.heroku.com/runtime-movie.git || true
+            git remote add heroku https://git.heroku.com/runtime-movie.git
+            echo | heroku auth:token
             git push heroku main -f
 
 workflows:
-  version: 2
-  test_and_deploy:
+  test-and-deploy:
     jobs:
-      - build_test
+      - test
       - deploy:
           requires:
-            - build_test
+            - test
           filters:
             branches:
               only: main
