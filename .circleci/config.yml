@@ -63,7 +63,7 @@ jobs:
 
   deploy:
     docker:
-      - image: cimg/ruby:3.2.2
+      - image: cimg/ruby:3.2.0
     steps:
       - checkout
       - run:
@@ -72,8 +72,7 @@ jobs:
       - run:
           name: Deploy to Heroku
           command: |
-            git remote add heroku https://git.heroku.com/runtime-movie.git
-            echo | heroku auth:token
+            git remote add heroku https://heroku:${HEROKU_API_KEY}@git.heroku.com/runtime-movie.git
             git push heroku main -f
 
 workflows:
