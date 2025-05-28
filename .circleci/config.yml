@@ -50,8 +50,12 @@ jobs:
           command: bundle exec rubocop
 
       - run:
+          name: Check Node version
+          command: node -v
+
+      - run:
           name: Compile Webpacker assets
-          command: bundle exec rails webpacker:compile RAILS_ENV=test
+          command: NODE_OPTIONS=--openssl-legacy-provider bundle exec rails webpacker:compile RAILS_ENV=test
 
       - run:
           name: Run RSpec tests
