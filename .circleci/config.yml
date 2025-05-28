@@ -8,7 +8,7 @@ orbs:
 jobs:
   test:
     docker:
-      - image: cimg/ruby:3.2.0-browsers  # Chrome & ChromeDriver含む
+      - image: cimg/ruby:3.2.0-browsers
     steps:
       - browser-tools/install-chrome
 
@@ -18,9 +18,7 @@ jobs:
             set -ex
             sudo apt-get update && sudo apt-get install -y unzip
             CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+\.\d+')
-            echo "Installed Chrome version: $CHROME_VERSION"
             CHROMEDRIVER_URL="https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROME_VERSION/linux64/chromedriver-linux64.zip"
-            echo "Downloading ChromeDriver from: $CHROMEDRIVER_URL"
             curl -sSL "$CHROMEDRIVER_URL" -o chromedriver.zip
             unzip chromedriver.zip
             chmod +x chromedriver-linux64/chromedriver
@@ -29,39 +27,30 @@ jobs:
 
       - checkout
 
-      - browser-tools/install-chrome
-
       - run:
-          name: Install matching ChromeDriver
-          command: |
-            set -ex
-            sudo apt-get update && sudo apt-get install -y unzip
-            CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+\.\d+')
-            echo "Installed Chrome version: $CHROME_VERSION"
-            CHROMEDRIVER_URL="https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROME_VERSION/linux64/chromedriver-linux64.zip"
-            echo "Downloading ChromeDriver from: $CHROMEDRIVER_URL"
-            curl -sSL "$CHROMEDRIVER_URL" -o chromedriver.zip
-            unzip chromedriver.zip
-            chmod +x chromedriver-linux64/chromedriver
-            sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
-            rm -rf chromedriver.zip chromedriver-linux64
-
-      - run:
-          name: Install dependencies
+          name: Install Ruby gems
           command: bundle install --jobs=4 --retry=3
 
       - run:
-          name: Set up DB
+          name: Install JavaScript packages
+          command: yarn install
+
+      - run:
+          name: Add webpack and webpack-cli (if missing)
+          command: yarn add webpack webpack-cli --dev
+
+      - run:
+          name: Setup DB
           command: |
-            bundle exec rake db:create
-            bundle exec rake db:schema:load
+            bundle exec rails db:create RAILS_ENV=test
+            bundle exec rails db:schema:load RAILS_ENV=test
 
       - run:
           name: Run RuboCop
           command: bundle exec rubocop
 
       - run:
-          name: Webpacker compile
+          name: Compile Webpacker assets
           command: bundle exec rails webpacker:compile RAILS_ENV=test
 
       - run:
@@ -73,12 +62,9 @@ jobs:
       - image: cimg/ruby:3.2.2
     steps:
       - checkout
-
       - run:
           name: Install Heroku CLI
-          command: |
-            curl https://cli-assets.heroku.com/install.sh | sh
-
+          command: curl https://cli-assets.heroku.com/install.sh | sh
       - run:
           name: Deploy to Heroku
           command: |
