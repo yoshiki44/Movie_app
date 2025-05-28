@@ -36,8 +36,8 @@ jobs:
           command: yarn install
 
       - run:
-          name: Add webpack and webpack-cli (if missing)
-          command: yarn add webpack webpack-cli --dev
+          name: Add webpack@4 and webpack-cli@3
+          command: yarn add webpack@4 webpack-cli@3 --dev
 
       - run:
           name: Setup DB
