@@ -4,12 +4,15 @@ orbs:
   ruby: circleci/ruby@1.1.2
   browser-tools: circleci/browser-tools@1.4.0
   heroku: circleci/heroku@1.2.6
+  node: circleci/node@5.1.0
 
 jobs:
   test:
     docker:
       - image: cimg/ruby:3.2.0-browsers
     steps:
+      - node/install:
+          node-version: '20.14.0'
       - browser-tools/install-chrome
 
       - run:
