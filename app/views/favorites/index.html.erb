@@ -2,7 +2,7 @@
   <div class="row">
     <% @favorites.each do |favorite| %>
       <% movie = get_movie_from_api(favorite.movie_id) %>
-      <% if movie.present? %>
+      <% if movie.present? && movie['id'].present? %>
         <div class="col mb-5">
           <div class="card h-100">
             <% if movie['poster_path'] %>
@@ -24,7 +24,7 @@
           </div>
         </div>
       <% else %>
-        <p>映画情報が取得できませんでした。</p>
+        <p>映画情報が取得できませんでした（ID: <%= favorite.movie_id %>）。</p>
       <% end %>
     <% end %>
   </div>
