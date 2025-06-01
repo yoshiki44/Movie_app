@@ -1,7 +1,7 @@
 <% if @favorites.any? %>
   <div class="row">
     <% @favorites.each do |favorite| %>
-      <% movie = get_movie_from_api(favorite.tmdb_id) %>
+      <% movie = get_movie_from_api(favorite.movie_id) %>
       <% if movie.present? %>
         <div class="col mb-5">
           <div class="card h-100">
