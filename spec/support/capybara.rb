@@ -1,8 +1,10 @@
+# frozen_string_literal: true
+
 require 'capybara/rails'
 require 'capybara/rspec'
 require 'selenium/webdriver'
 
-Selenium::WebDriver::Chrome::Service.driver_path = "/usr/local/bin/chromedriver"
+Selenium::WebDriver::Chrome::Service.driver_path = '/usr/local/bin/chromedriver'
 
 Capybara.register_driver :selenium_chrome_headless do |app|
   chrome_options = Selenium::WebDriver::Chrome::Options.new

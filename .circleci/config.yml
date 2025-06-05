@@ -4,14 +4,15 @@ orbs:
   ruby: circleci/ruby@1.1.2
   browser-tools: circleci/browser-tools@1.4.0
   heroku: circleci/heroku@1.2.6
+  node: circleci/node@5.1.0
 
 jobs:
   test:
     docker:
-      - image: cimg/ruby:3.2.2-browsers  # Chrome & ChromeDriver含む
+      - image: cimg/ruby:3.2.0-browsers
     steps:
-      - checkout
-
+      - node/install:
+          node-version: '20.14.0'
       - browser-tools/install-chrome
 
       - run:
@@ -20,28 +21,44 @@ jobs:
             set -ex
             sudo apt-get update && sudo apt-get install -y unzip
             CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+\.\d+')
-            echo "Installed Chrome version: $CHROME_VERSION"
             CHROMEDRIVER_URL="https://edgedl.me.gvt1.com/edgedl/chrome/chrome-for-testing/$CHROME_VERSION/linux64/chromedriver-linux64.zip"
-            echo "Downloading ChromeDriver from: $CHROMEDRIVER_URL"
             curl -sSL "$CHROMEDRIVER_URL" -o chromedriver.zip
             unzip chromedriver.zip
             chmod +x chromedriver-linux64/chromedriver
             sudo mv chromedriver-linux64/chromedriver /usr/local/bin/
             rm -rf chromedriver.zip chromedriver-linux64
 
+      - checkout
+
       - run:
-          name: Install dependencies
+          name: Install Ruby gems
           command: bundle install --jobs=4 --retry=3
 
       - run:
-          name: Set up DB
+          name: Install JavaScript packages
+          command: yarn install
+
+      - run:
+          name: Add webpack@4 and webpack-cli@3
+          command: yarn add webpack@4 webpack-cli@3 --dev
+
+      - run:
+          name: Setup DB
           command: |
-            bundle exec rake db:create
-            bundle exec rake db:schema:load
+            bundle exec rails db:create RAILS_ENV=test
+            bundle exec rails db:schema:load RAILS_ENV=test
 
       - run:
           name: Run RuboCop
           command: bundle exec rubocop
+
+      - run:
+          name: Check Node version
+          command: node -v
+
+      - run:
+          name: Compile Webpacker assets
+          command: NODE_OPTIONS=--openssl-legacy-provider bundle exec rails webpacker:compile RAILS_ENV=test
 
       - run:
           name: Run RSpec tests
@@ -49,20 +66,16 @@ jobs:
 
   deploy:
     docker:
-      - image: cimg/ruby:3.2.2
+      - image: cimg/ruby:3.2.0
     steps:
       - checkout
-
       - run:
           name: Install Heroku CLI
-          command: |
-            curl https://cli-assets.heroku.com/install.sh | sh
-
+          command: curl https://cli-assets.heroku.com/install.sh | sh
       - run:
           name: Deploy to Heroku
           command: |
-            git remote add heroku https://git.heroku.com/runtime-movie.git
-            echo | heroku auth:token
+            git remote add heroku https://heroku:${HEROKU_API_KEY}@git.heroku.com/runtime-movie.git
             git push heroku main -f
 
 workflows:

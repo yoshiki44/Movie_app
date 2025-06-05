@@ -1,30 +1,35 @@
 <% if @favorites.any? %>
   <div class="row">
     <% @favorites.each do |favorite| %>
-      <% movie = get_movie_from_api(favorite.movie_id) %>
-      <% if movie.present? %>
-        <div class="col mb-5">
-          <div class="card h-100">
-            <% if movie['poster_path'] %>
-              <%= image_tag "https://image.tmdb.org/t/p/w200#{movie['poster_path']}", class: "card-img-top" %>
-            <% end %>
-            <div class="card-body p-4">
-              <div class="text-center">
-                <!-- Movie title -->
-                <%= link_to movie_path(movie['id']) do %>
-                  <p class="fw-bolder"><%= movie['title'] %></p>
-                <% end %>
-                <p>公開日：<%= movie['release_date'] %></p>
-                <p>評価：<%= number_with_precision(movie['vote_average'], precision: 1) || '評価なし' %> / 10</p>
+      <% movie_record = Movie.find_by(id: favorite.movie_id) %>
+      <% if movie_record.present? %>
+        <% movie = get_movie_from_api(movie_record.tmdb_id) %>
+        <% if movie.present? && movie['id'].present? %>
+          <div class="col mb-5">
+            <div class="card h-100">
+              <% if movie['poster_path'] %>
+                <%= image_tag "https://image.tmdb.org/t/p/w200#{movie['poster_path']}", class: "card-img-top" %>
+              <% end %>
+              <div class="card-body p-4">
+                <div class="text-center">
+                  <!-- Movie title -->
+                  <%= link_to movie_path(movie['id']) do %>
+                    <p class="fw-bolder"><%= movie['title'] %></p>
+                  <% end %>
+                  <p>公開日：<%= movie['release_date'] %></p>
+                  <p>評価：<%= number_with_precision(movie['vote_average'], precision: 1) || '評価なし' %> / 10</p>
+                </div>
               </div>
-            </div>
 
-            <!-- 修正: favorite.id を渡す -->
-            <%= button_to "お気に入り解除", favorite_path(favorite.id), method: :delete, class: "btn btn-danger" %>
+              <!-- 修正: favorite.id を渡す -->
+              <%= button_to "お気に入り解除", favorite_path(favorite.id), method: :delete, class: "btn btn-danger" %>
+            </div>
           </div>
-        </div>
+        <% else %>
+          <p>映画情報が取得できませんでした（TMDB ID: <%= movie_record.tmdb_id %>）。</p>
+        <% end %>
       <% else %>
-        <p>映画情報が取得できませんでした。</p>
+        <p>映画情報が取得できませんでした（Movie DB ID: <%= favorite.movie_id %>）。</p>
       <% end %>
     <% end %>
   </div>

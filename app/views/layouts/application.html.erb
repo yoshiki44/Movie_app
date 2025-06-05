@@ -53,10 +53,10 @@
 
     <div class="header-list">
       <% if flash[:notice] %>
-        <p>Notice: <%= flash[:notice] %></p>
+        <div class="alert-movie alert-notice"><%= flash[:notice] %></div>
       <% end %>
       <% if flash[:alert] %>
-        <p>Alert: <%= flash[:alert] %></p>
+        <div class="alert-movie alert-error"><%= flash[:alert] %></div>
       <% end %>
     </div>
 

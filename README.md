@@ -1,24 +1,49 @@
-# README
+## 1.サービスの概要
+「Runtime　Movies」は隙間時間に合わせて映画を検索できる
+TMDB（The Movie Database）APIを使った映画検索・お気に入り管理アプリ
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+## 2.サービスの詳細
+「Runtime Movies」はユーザーの隙間時間に合わせた映画検索が可能なウェブアプリです。
+ユーザー登録・ログインすることでお気に入り登録も可能なので、見たい映画をリスト化することができます。
+また評価順や公開日順で並び替えが可能なので、希望に合った映画を検索することが可能になります。
 
-Things you may want to cover:
+## 3.サービス画像
+![サービス画像](./Home.png)
 
-* Ruby version
+## 4.サービスのURL
+https://runtime-movie-4bf3919b35af.herokuapp.com/
 
-* System dependencies
+## 5.作成した背景
+少しの暇な時間がある時に、空き時間に合わせた映画を検索できるものがアプリがあると便利だなと感じたのがきっかけです。
+家事のすきま時間や、新幹線など移動時間に合わせた上映時間、短編映画の気分だったり長編映画の気分など、その日の気分に合わせて上映時間から映画が選べるといいと思いました。
+またジャンルを表示することにより、この映画がどんな映画なのか一目でイメージできるようにすれば好みの映画を検索できると思い、ジャンル表示も行いました。
+追加機能として評価順や公開日順での並び替えも実装いたしました。
 
-* Configuration
+## 6.主な機能
 
-* Database creation
+- 映画の検索（上映時間で絞り込み、評価・公開日順で並び替え）
+- 映画の詳細表示
+- ユーザー登録・ログイン（ゲストログイン対応）
+- お気に入り登録・解除
+- お気に入り映画一覧表示
 
-* Database initialization
+## 7.主な使用技術
 
-* How to run the test suite
+### フロントエンド
+- HTML/CSS/JavaScript
+- Bootstrap
 
-* Services (job queues, cache servers, search engines, etc.)
+### バックエンド
+- Ruby 3.2.0
+- Ruby on Rails 6.1.7.7
+- PostgreSQL（データベース）
+- TMDB API
 
-* Deployment instructions
+### インフラ・開発環境
+- heroku
+- GitHub
+- Circle CI
 
-* ...
+## ER図
+
+![ER図](./erd.png)

@@ -541,6 +541,49 @@
   }
 }
 
+.alert-movie {
+  background: linear-gradient(90deg, #1a1a1a 80%, #c0392b 120%);
+  color: #fff;
+  border-left: 6px solid gold;
+  border-radius: 8px;
+  box-shadow: 0 4px 15px rgba(255, 0, 0, 0.2), 0 1.5px 6px rgba(0,0,0,0.9);
+  font-size: 1.1rem;
+  font-weight: bold;
+  margin: 20px auto;
+  max-width: 600px;
+  padding: 16px 32px;
+  letter-spacing: 1px;
+  position: relative;
+  overflow: hidden;
+  animation: fadeInMovieAlert 0.7s;
+}
+
+.alert-movie:before {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 1.5rem;
+  filter: drop-shadow(0 2px 2px rgba(255,255,255,0.6));
+}
+
+@keyframes fadeInMovieAlert {
+  from { opacity: 0; transform: translateY(-30px);}
+  to   { opacity: 1; transform: translateY(0);}
+}
+
+/* 通知色分け（任意） */
+.alert-movie.alert-notice {
+  border-left: 6px solid #f1c40f;
+  background: linear-gradient(90deg, #232526 80%, #f1c40f 120%);
+  color: #fff;
+}
+.alert-movie.alert-error {
+  border-left: 6px solid #e74c3c;
+  background: linear-gradient(90deg, #232526 80%, #e74c3c 120%);
+  color: #fff;
+}
+
 body {
   padding-top: 100px; /* headerの高さ分 */
 }
