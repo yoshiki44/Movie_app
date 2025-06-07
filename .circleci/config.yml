@@ -58,7 +58,7 @@ jobs:
 
       - run:
           name: Compile Webpacker assets
-          command: NODE_OPTIONS=--openssl-legacy-provider bundle exec rails webpacker:compile RAILS_ENV=test
+          command: bundle exec rails webpacker:compile RAILS_ENV=test
 
       - run:
           name: Run RSpec tests
