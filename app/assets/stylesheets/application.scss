@@ -18,10 +18,29 @@
    top: 0;
    width: 100%;
    z-index: 1030;
+   background: url('https://source.unsplash.com/1600x900/?cinema,movie') center/cover no-repeat;
+   text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
  }
 
  .header-title {
    background-color: #222;
+   display: flex;
+   align-items: center; // 縦位置を揃える
+   justify-content: center; // 中央寄せ
+   gap: 20px; // タイトルとサブタイトルの間に余白
+   flex-wrap: wrap; // レスポンシブ対応（小さい画面で折り返し）
+ }
+
+ .header-title h1 {
+   font-size: 2.5rem;
+   color: gold;
+   margin: 0;
+ }
+
+ .header-title p {
+   font-size: 1.2rem;
+   color: #fff;
+   margin: 0;
  }
 
  .app-title {
@@ -64,6 +83,17 @@
 
  .nav-item.dropdown {
   position: relative;
+}
+
+.navbar-toggler {
+  display: block;
+  border: none;
+  background: none;
+  padding: 8px;
+}
+
+.menu-close-btn {
+  display: none;
 }
 
  /* Bootstrap 5 のドロップダウンメニュー */
@@ -115,32 +145,6 @@
   background-color: #c0392b;
   color: white;
 }
-
- /* 🎥 ヘッダー */
- header {
-   background: url('https://source.unsplash.com/1600x900/?cinema,movie') center/cover no-repeat;
-   text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.8);
- }
-
- .header-title {
-   display: flex;
-   align-items: center; // 縦位置を揃える
-   justify-content: center; // 中央寄せ
-   gap: 20px; // タイトルとサブタイトルの間に余白
-   flex-wrap: wrap; // レスポンシブ対応（小さい画面で折り返し）
- }
-
- .header-title h1 {
-   font-size: 2.5rem;
-   color: gold;
-   margin: 0;
- }
-
- .header-title p {
-   font-size: 1.2rem;
-   color: #fff;
-   margin: 0;
- }
 
   /* 🍿 映画カード */
  .movie-card {
@@ -567,11 +571,6 @@
   filter: drop-shadow(0 2px 2px rgba(255,255,255,0.6));
 }
 
-@keyframes fadeInMovieAlert {
-  from { opacity: 0; transform: translateY(-30px);}
-  to   { opacity: 1; transform: translateY(0);}
-}
-
 /* 通知色分け（任意） */
 .alert-movie.alert-notice {
   border-left: 6px solid #f1c40f;
@@ -586,4 +585,73 @@
 
 body {
   padding-top: 100px; /* headerの高さ分 */
+}
+
+@media (min-width: 992px) {
+  .navbar-toggler {
+    display: none;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .navbar-nav {
+    display: block;
+    gap: 0;
+    margin: 0;
+    align-items: stretch;
+    padding: 0 10px;
+  }
+  .navbar-nav .nav-item {
+    width: 100%;
+    margin-bottom: 18px;
+  }
+
+  .navbar-toggler {
+    display: flex;     /* スマホで表示 */
+    position: absolute;
+    top: 10px;
+    right: 16px;
+    z-index: 1200;
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='gold' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+  }
+  .navbar-collapse {
+    display: block;
+    position: fixed;
+    top: 0;
+    right: -260px; /* 最初は画面外に隠す */
+    width: 260px;   /* メニュー幅 */
+    height: 100vh;
+    background: #222;
+    box-shadow: -8px 0 24px rgba(0,0,0,0.4);
+    transition: right 0.3s cubic-bezier(.4,0,.2,1);
+    z-index: 2000;
+    padding-top: 60px;
+    border-radius: 0 0 10px 10px;
+    overflow-y: auto;
+  }
+
+  .navbar-collapse.show {
+    right: 0; /* 右側からスライドイン */
+    animation: none;
+    display: block;
+  }
+
+  .menu-close-btn {
+    display: block;
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: transparent;
+    color: gold;
+    font-size: 2rem;
+    border: none;
+    cursor: pointer;
+    z-index: 2500;
+    line-height: 1;
+  }
+}
+
+@keyframes fadeInMenu {
+  from { opacity: 0; transform: translateY(-20px);}
+  to { opacity: 1; transform: translateY(0);}
 }
