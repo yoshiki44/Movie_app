@@ -649,6 +649,24 @@ body {
     z-index: 2500;
     line-height: 1;
   }
+
+  .navbar-nav .dropdown-menu {
+    display: block !important;
+    opacity: 1 !important;
+    position: static !important;
+    transform: none !important;
+    visibility: visible !important;
+    background: none;
+    border: none;
+    box-shadow: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .navbar-nav .dropdown-toggle {
+    pointer-events: none;
+    color: gold !important; /* アカウント設定の色強調（好みで） */
+  }
 }
 
 @keyframes fadeInMenu {
